@@ -1,0 +1,2 @@
+task: 'classification'
+model_name: 'efficientnet'
