@@ -1,0 +1,1 @@
+# TODO: (Suggestion, not necessarily needed) Implement an abstract trainer class that the classification trainer and gan trainer will inherit from.  

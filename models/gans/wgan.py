@@ -1,0 +1,1 @@
+# TODO: Implement the wgan architecture (issue #6)
