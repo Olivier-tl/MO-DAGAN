@@ -10,4 +10,4 @@ Instruction to train models coming soon...
 
 
 ## Refs
-Training Generative Adversarial Networks with Limited Data [[paper](https://arxiv.org/abs/2006.06676)][[code](https://github.com/NVlabs/stylegan2-ada)]
+Training Generative Adversarial Networks with Limited Data [[paper](https://arxiv.org/abs/2006.06676)][[code](https://github.com/NVlabs/stylegan2-ada-pytorch)]
