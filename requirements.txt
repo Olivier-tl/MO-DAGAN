@@ -1,0 +1,10 @@
+-f /cvmfs/soft.computecanada.ca/custom/python/wheelhouse/gentoo/avx512
+-f /cvmfs/soft.computecanada.ca/custom/python/wheelhouse/gentoo/avx2
+-f /cvmfs/soft.computecanada.ca/custom/python/wheelhouse/gentoo/generic
+-f /cvmfs/soft.computecanada.ca/custom/python/wheelhouse/generic
+fire==0.4.0
+numpy==1.20.1
+six==1.15.0
+termcolor==1.1.0
+torch==1.8.0
+typing-extensions==3.7.4.3
