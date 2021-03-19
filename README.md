@@ -15,7 +15,14 @@ Install the required dependencies:
 ```
 pip install -r requirements.txt
 ```
-Instruction to train models coming soon...
+Run the following for training the GAN:
+```
+python main.py --config_path=configs/gan.yaml
+```
+Run the following for training the classification model:
+```
+python main.py --config_path=configs/classification.yaml
+```
 
 
 ## Refs
