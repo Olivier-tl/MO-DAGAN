@@ -7,14 +7,14 @@ import torch
 class Trainer(metaclass=abc.ABCMeta):
     
     @abc.abstractmethod
-    def __init__(model: torch.nn.module, dataset: torch.utils.data.DataLoader):
+    def __init__(self, model: torch.nn.Module, dataset: torch.utils.data.DataLoader):
         pass
 
     @abc.abstractmethod
-    def train():
+    def train(self):
         pass
 
     @abc.abstractmethod
-    def test():
+    def test(self):
         pass
 

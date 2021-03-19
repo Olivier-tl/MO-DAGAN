@@ -1,2 +1,8 @@
 task: 'classification'
-model_name: 'efficientnet'
+
+model:
+  name: 'efficientnet'
+
+optimizer:
+  lr: 0.001
+  
