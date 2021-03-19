@@ -9,6 +9,7 @@ class Config:
         self.config = yaml.load(open(config_path), Loader=yaml.Loader)
         self.task = self.config['task']
         self.model_name = self.config['model']['name']
+        self.model_config = self.config['model']
 
         # Add more config attributes here
         # self.new_attribute = ...
