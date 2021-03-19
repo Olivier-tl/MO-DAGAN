@@ -1,12 +1,12 @@
 import torch
 
-from .classification import EfficientNet
+from efficientnet_pytorch import EfficientNet
 from .gans import WGAN
 
 class ModelFactory:
     def create(model_name: str) -> torch.nn.Module:
         if model_name == 'efficientnet':
-            model = EfficientNet()
+            model = EfficientNet.from_name('efficientnet-b8')
         elif model_name == 'wgan':
             model = WGAN()
         else:

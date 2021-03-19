@@ -9,3 +9,4 @@ six==1.15.0
 termcolor==1.1.0
 torch==1.8.0
 typing-extensions==3.7.4.3
+efficientnet-pytorch==0.7.0
