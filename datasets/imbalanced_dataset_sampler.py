@@ -31,7 +31,8 @@ class ImbalancedDatasetSampler(torch.utils.data.sampler.Sampler):
         trunc_idx = int(len(class_idx[classes[0]]) // imbalance_ratio)
         random.shuffle(class_idx[classes[-1]])
         class_idx[classes[-1]] = class_idx[classes[-1]][:trunc_idx]
-        self.imbalanced_indices = itertools.chain.from_iterable([class_idx[classes[i]] for i in range(len(classes))])
+        self.imbalanced_indices = list(
+            itertools.chain.from_iterable([class_idx[classes[i]] for i in range(len(classes))]))
 
     def __iter__(self):
         return (self.imbalanced_indices[i] for i in torch.randperm(len(self.imbalanced_indices)))

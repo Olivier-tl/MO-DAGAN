@@ -1,3 +1,4 @@
+import pprint
 import yaml
 
 from utils import logging
@@ -12,9 +13,7 @@ class Config:
         self.model_name = self.config['model']['name']
         self.validation_split = self.config['dataset']['validation_split']
         self.classes = self.config['dataset']['classes']
-
-        # Add more config attributes here
-        # self.new_attribute = ...
+        self.batch_size = self.config['dataset']['batch_size']
 
     def print(self):
-        logger.info(f'Config: {self.config}')
+        pprint.pprint(self.config)
