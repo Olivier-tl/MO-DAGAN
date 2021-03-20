@@ -2,7 +2,7 @@ import torch
 import torch.optim as optim
 import torch.nn as nn
 
-from trainer import Trainer
+from .trainer import Trainer
 
 # Loosely based on : https://pytorch.org/tutorials/beginner/blitz/cifar10_tutorial.html
 
