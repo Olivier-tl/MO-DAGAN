@@ -1,15 +1,15 @@
-# TODO: Implement the wgan architecture (issue #6)
+# From https://github.com/Zeleni9/pytorch-wgan/blob/master/models/wgan_gradient_penalty.py
+
+import os
+from itertools import chain
+
 import torch
 import torch.nn as nn
 import torch.optim as optim
-from torch.autograd import Variable
 from torch import autograd
-import time as t
-import matplotlib.pyplot as plt
-plt.switch_backend('agg')
-import os
-from itertools import chain
+from torch.autograd import Variable
 from torchvision import utils as utils
+
 from utils.logging import logging
 
 SAVE_PER_TIMES = 100

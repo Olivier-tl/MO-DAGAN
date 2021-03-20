@@ -1,4 +1,3 @@
-# TODO: create GAN config
 task: 'generation'
 
 model:
