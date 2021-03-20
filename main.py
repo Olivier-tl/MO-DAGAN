@@ -18,7 +18,7 @@ def main(config_path: str = 'configs/classification.yaml',
     config.print()
 
     # Load model
-    model = ModelFactory.create(model_name=config.model_name)
+    model = ModelFactory.create(model_config=config.model_config)
 
     # Load dataset
     dataset = DatasetFactory.create(dataset_name=dataset_name, imbalance_ratio=imbalance_ratio)

@@ -2,14 +2,16 @@ import torch
 
 from efficientnet_pytorch import EfficientNet
 from .gans import WGAN
+from utils import AttrDict
 
 class ModelFactory:
-    def create(model_name: str) -> torch.nn.Module:
-        if model_name == 'efficientnet':
+    def create(model_config: dict) -> torch.nn.Module:
+        model_config['name']
+        if model_config['name'] == 'efficientnet':
             model = EfficientNet.from_name('efficientnet-b8')
-        elif model_name == 'wgan':
-            model = WGAN()
+        elif model_config['name'] == 'wgan':
+            model = WGAN(AttrDict(model_config['args']))
         else:
-            raise ValueError(f'model_name "{config["model_name"]}" '
-                                f'in config "{config_path}" not recognized.')
+            raise ValueError(f'model name "{model_config["name"]}" '
+                                f'in config not recognized.')
         return model
