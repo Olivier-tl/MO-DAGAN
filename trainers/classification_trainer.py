@@ -26,14 +26,15 @@ class ClassificationTrainer(Trainer):
         optimizer = "Adam",
         loss = "cross entropy",
         num_epoch = 1,
-        seed = 0
+        seed = None
     ):
         self.model = model
         self.train_dataset = train_dataset
         self.valid_dataset = valid_dataset
-        self.seed = seed
         self.optimizer = getOptimizer(optimizer)
         self.loss = getLoss(loss)
+        if seed :
+            torch.manual_seed(seed)
 
     # Might need to set more parameters
     def getOptimizer(self, opt):
