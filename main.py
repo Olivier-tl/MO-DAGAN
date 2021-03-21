@@ -18,8 +18,7 @@ def main(config_path: str = 'configs/classification.yaml', dataset_name: str = '
     config = Config(config_path=config_path)
 
     # Load model
-    logger.info('Loading model...')
-    model = ModelFactory.create(model_name=config.model_name)
+    model = ModelFactory.create(model_config=config.model_config)
 
     # Load dataset
     logger.info('Loading dataset...')
