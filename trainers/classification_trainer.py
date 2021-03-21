@@ -1,6 +1,7 @@
 import torch
 import torch.optim as optim
 import torch.nn as nn
+from torch.utils.data import DataLoader
 
 from .trainer import Trainer
 
@@ -58,6 +59,11 @@ class ClassificationTrainer(Trainer):
     def save_model(self, name):
         PATH = '../saved_models/' + name
         torch.save(self.model.state_dict(), PATH)
+    
+    def __init__(self, model: torch.nn.Module, train_dataset: DataLoader, valid_dataset: DataLoader):
+        self.model = model
+        self.train_dataset = train_dataset
+        self.valid_dataset = valid_dataset
 
     def train(self):
         for epoch in range(self.num_epoch):
