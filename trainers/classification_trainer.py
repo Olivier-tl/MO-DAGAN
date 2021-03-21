@@ -20,33 +20,27 @@ from .trainer import Trainer
 #            test the trained net using the normalized and splitted test data
 
 class ClassificationTrainer(Trainer):
-    def __init__(self,
-        model: torch.nn.Module,
-        train_dataset: torch.utils.data.DataLoader,
-        valid_dataset: torch.utils.data.DataLoader,
-        optimizer = "Adam",
-        loss = "cross entropy",
-        num_epoch = 1,
-        seed = None
-    ):
+    def __init__(self, model: torch.nn.Module, train_dataset: torch.utils.data.DataLoader, valid_dataset: torch.utils.data.DataLoader, lr = 0.001, optimizer = "Adam", loss = "cross entropy", num_epoch = 2, seed = None):
         self.model = model
         self.train_dataset = train_dataset
         self.valid_dataset = valid_dataset
-        self.optimizer = getOptimizer(optimizer)
-        self.loss = getLoss(loss)
+        print("train size : ", len(train_dataset.dataset), " valid size : ", len(valid_dataset.dataset))
+        self.lr = lr
+        self.optimizer = self.getOptimizer(optimizer)
+        self.loss = self.getLoss(loss)
+        self.num_epoch = num_epoch
         if seed :
             torch.manual_seed(seed)
 
     # Might need to set more parameters
     def getOptimizer(self, opt):
-        lr = 0.0001
         if opt == "Adam":
-            return optim.Adam(self.model.parameters(), lr)
+            return optim.Adam(self.model.parameters(), self.lr)
         elif opt == "SGD":
-            return optim.SGD(self.model.parameters(), lr)
+            return optim.SGD(self.model.parameters(), self.lr)
         else :
             print("For now, use Adam or SGD optimizers. Falling back to Adam by default")
-            return optim.Adam(self.model.parameters(), lr)
+            return optim.Adam(self.model.parameters(), self.lr)
 
     # Might need to set more possible losses/criterions
     def getLoss(self, opt):
@@ -59,17 +53,16 @@ class ClassificationTrainer(Trainer):
     def save_model(self, name):
         PATH = '../saved_models/' + name
         torch.save(self.model.state_dict(), PATH)
-    
-    def __init__(self, model: torch.nn.Module, train_dataset: DataLoader, valid_dataset: DataLoader):
-        self.model = model
-        self.train_dataset = train_dataset
-        self.valid_dataset = valid_dataset
 
     def train(self):
+
         for epoch in range(self.num_epoch):
 
             running_loss = 0.0
             for i, data in enumerate(self.train_dataset, 0):
+
+                print("batch : ", i + 1)
+
                 # get the inputs; data is a list of [inputs, labels]
                 inputs, labels = data
 
@@ -78,22 +71,26 @@ class ClassificationTrainer(Trainer):
 
                 # forward + backward + optimize
                 outputs = self.model(inputs)
+
                 loss = self.loss(outputs, labels)
                 loss.backward()
                 self.optimizer.step()
 
                 # print statistics
                 running_loss += loss.item()
-                if i % 2000 == 1999:    # print every 2000 mini-batches
+
+                #if i % 2000 == 1999:    # print every 2000 mini-batches
+                iter_run_loss = 10
+                if i % iter_run_loss == iter_run_loss - 1:
                     print('[%d, %5d] loss: %.3f' %
-                          (epoch + 1, i + 1, running_loss / 2000))
+                    (epoch + 1, i + 1, running_loss / iter_run_loss))
                     running_loss = 0.0
 
         print('Finished Training')
 
     def test(self):
 
-        model.eval()
+        self.model.eval()
         with torch.no_grad():
 
             running_loss = 0.0
@@ -106,4 +103,4 @@ class ClassificationTrainer(Trainer):
 
                 running_loss+= loss.item()
 
-            print("Valid set avg loss : %.3f" %(running_loss / len(self.valid_dataset.dataset)))
+        print("Valid set avg loss : %.5f" %(running_loss / len(self.valid_dataset.dataset)))

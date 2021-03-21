@@ -10,8 +10,7 @@ logger = logging.getLogger()
 
 OUTPUT_PATH = 'output'
 
-
-def main(config_path: str = 'configs/classification.yaml', dataset_name: str = 'mnist', imbalance_ratio: int = 1):
+def main(config_path: str = 'configs/classification.yaml', dataset_name: str = 'svhn', imbalance_ratio: int = 1):
 
     # Load configuration
     logger.info(f'Loading config at "{config_path}"...')
