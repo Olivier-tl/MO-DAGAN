@@ -1,5 +1,9 @@
+import random
+
 import fire
 import yaml
+import torch
+import numpy as np
 
 from models import ModelFactory
 from datasets import DatasetFactory
@@ -11,6 +15,14 @@ logger = logging.getLogger()
 OUTPUT_PATH = 'output'
 
 def main(config_path: str = 'configs/classification.yaml', dataset_name: str = 'svhn', imbalance_ratio: int = 1):
+
+    # Setting a seed
+    seed = 0 # otherwise seed = None
+    if seed :
+        torch.manual_seed(seed)
+        torch.cuda.manual_seed_all(seed)
+        np.random.seed(seed)
+        random.seed(seed)
 
     # Load configuration
     logger.info(f'Loading config at "{config_path}"...')

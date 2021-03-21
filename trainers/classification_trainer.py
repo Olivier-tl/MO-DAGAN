@@ -1,13 +1,14 @@
+import random
+
 import torch
 import torch.optim as optim
 import torch.nn as nn
 from torch.utils.data import DataLoader
+import numpy as np
 
 from .trainer import Trainer
 
 # Loosely based on : https://pytorch.org/tutorials/beginner/blitz/cifar10_tutorial.html
-
-# TODO: Implement the classification trainer (issue #4)
 
 # Receives: an untrained, but constructed model/net
 #           a dataset
@@ -20,17 +21,21 @@ from .trainer import Trainer
 #            test the trained net using the normalized and splitted test data
 
 class ClassificationTrainer(Trainer):
-    def __init__(self, model: torch.nn.Module, train_dataset: torch.utils.data.DataLoader, valid_dataset: torch.utils.data.DataLoader, lr = 0.001, optimizer = "Adam", loss = "cross entropy", num_epoch = 2, seed = None):
+    def __init__(self, model: torch.nn.Module, train_dataset: torch.utils.data.DataLoader, valid_dataset: torch.utils.data.DataLoader, lr = 0.001, optimizer = "Adam", loss = "cross entropy", num_epoch = 2, seed = 0):
         self.model = model
         self.train_dataset = train_dataset
         self.valid_dataset = valid_dataset
-        print("train size : ", len(train_dataset.dataset), " valid size : ", len(valid_dataset.dataset))
         self.lr = lr
         self.optimizer = self.getOptimizer(optimizer)
         self.loss = self.getLoss(loss)
         self.num_epoch = num_epoch
         if seed :
-            torch.manual_seed(seed)
+            #torch.manual_seed(seed)
+            #torch.cuda.manual_seed_all(seed)
+            #np.random.seed(seed)
+            #random.seed(seed)
+            #torch.backends.cudnn.deterministic=True
+            pass
 
     # Might need to set more parameters
     def getOptimizer(self, opt):
