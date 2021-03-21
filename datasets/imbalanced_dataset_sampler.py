@@ -1,6 +1,7 @@
 import itertools
 import typing
 import random
+from collections import defaultdict
 
 import torch
 
@@ -21,12 +22,12 @@ class ImbalancedDatasetSampler(torch.utils.data.sampler.Sampler):
         if imbalance_ratio != 1 and len(classes) == 1:
             raise ValueError("Can't create an imbalance if only one classe is selected.")
 
-        class_idx = {}
+        class_idx = defaultdict(list)
         for idx in list(range(len(dataset))):
             label = dataset[idx][1]
             for i in range(len(classes)):
                 if label == classes[i]:
-                    class_idx.setdefault(label, []).append(idx)
+                    class_idx[label].append(idx)
 
         trunc_idx = int(len(class_idx[classes[0]]) // imbalance_ratio)
         random.shuffle(class_idx[classes[-1]])

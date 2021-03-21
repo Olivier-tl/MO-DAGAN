@@ -15,7 +15,10 @@ class DatasetFactory:
     def create(dataset_name: str, imbalance_ratio: int, cache_path: str, validation_split: float,
                classes: typing.List[int], batch_size: int) -> typing.Tuple[DataLoader, DataLoader, DataLoader]:
         save_path = os.path.join(cache_path, dataset_name)
+
+        # FIXME : Normalize using the actual mean and std of the dataset (issue #15)
         transform = transforms.Compose([transforms.ToTensor(), transforms.Normalize((0.5, ), (0.5, ))])
+
         if dataset_name == 'mnist':
             dataset = torchvision.datasets.MNIST(save_path, train=True, download=True, transform=transform)
             test_dataset = torchvision.datasets.MNIST(save_path, train=False, download=True, transform=transform)
