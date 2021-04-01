@@ -14,11 +14,16 @@ logger = logging.getLogger()
 
 OUTPUT_PATH = 'output'
 
-def main(config_path: str = 'configs/classification.yaml', dataset_name: str = 'svhn', imbalance_ratio: int = 1):
+
+def main(
+        config_path: str = 'configs/classification.yaml',
+        dataset_name: str = 'svhn',
+        imbalance_ratio: int = 1,
+        seed: int = 1,  # No seed if 0
+):
 
     # Setting a seed
-    seed = 0 # otherwise seed = None
-    if seed :
+    if seed:
         torch.manual_seed(seed)
         torch.cuda.manual_seed_all(seed)
         np.random.seed(seed)

@@ -4,8 +4,7 @@ model:
   name: 'wgan'
   args:
     channels: 3
-    cuda: false
-    generator_iters: 2
+    generator_iters: 100
 
 optimizer:
   lr: 0.001
