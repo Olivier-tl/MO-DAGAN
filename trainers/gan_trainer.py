@@ -6,6 +6,7 @@ import torch
 from torch.utils.data import DataLoader
 from torch.autograd import Variable
 from torchvision import utils
+from tqdm import tqdm
 
 from utils import logging
 from .trainer import Trainer
@@ -13,17 +14,12 @@ from .trainer import Trainer
 logger = logging.getLogger()
 
 IMG_SAMPLES_PATH = 'output/gan_samples'
-SAVE_PER_TIMES = 100
+SAVE_PER_TIMES = 500
 
 
 class GANTrainer(Trainer):
-    def __init__(self,
-                 model: torch.nn.Module,
-                 dataset: DataLoader,
-                 lr: float = 0.001,
-                 optimizer: str = "adam",
-                 loss: str = "cross_entropy"):
-        super(GANTrainer, self).__init__(model, loss)
+    def __init__(self, model: torch.nn.Module, dataset: DataLoader, lr: float = 0.001, optimizer: str = "adam"):
+        super(GANTrainer, self).__init__(model)
         self.dataset = dataset
         self.d_optimizer = self._get_optimizer(optimizer, model.D, lr)
         self.g_optimizer = self._get_optimizer(optimizer, model.G, lr)
@@ -33,7 +29,7 @@ class GANTrainer(Trainer):
         one = torch.tensor(1, dtype=torch.float).to(self.device)
         mone = (one * -1).to(self.device)
 
-        for g_iter in range(self.model.generator_iters):
+        for g_iter in tqdm(range(self.model.generator_iters), desc='Generator Iterations'):
 
             for p in self.model.D.parameters():
                 p.requires_grad = True
@@ -75,9 +71,11 @@ class GANTrainer(Trainer):
                 d_loss = d_loss_fake - d_loss_real + gradient_penalty
                 Wasserstein_D = d_loss_real - d_loss_fake
                 self.d_optimizer.step()
-                logger.info(
-                    f'  Discriminator iteration: {d_iter}/{self.model.critic_iter}, loss_fake: {d_loss_fake}, loss_real: {d_loss_real}'
-                )
+
+                # TODO: Log to WandB
+                # logger.info(
+                #     f'  Discriminator iteration: {d_iter}/{self.model.critic_iter}, loss_fake: {d_loss_fake}, loss_real: {d_loss_real}'
+                # )
 
             # ---------------------
             # Train generator
@@ -97,7 +95,9 @@ class GANTrainer(Trainer):
             g_loss.backward(mone)
             g_cost = -g_loss
             self.g_optimizer.step()
-            logger.info(f'Generator iteration: {g_iter}/{self.model.generator_iters}, g_loss: {g_loss}')
+
+            # TODO: Log to WandB
+            # logger.info(f'Generator iteration: {g_iter}/{self.model.generator_iters}, g_loss: {g_loss}')
 
             # Saving model and sampling images every 1000th generator iterations
             if (g_iter) % SAVE_PER_TIMES == 0:

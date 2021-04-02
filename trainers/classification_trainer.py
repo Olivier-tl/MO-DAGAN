@@ -27,10 +27,11 @@ class ClassificationTrainer(Trainer):
                  optimizer: str = "adam",
                  loss: str = "cross_entropy",
                  num_epoch: int = 10):
-        super(ClassificationTrainer, self).__init__(model, loss)
+        super(ClassificationTrainer, self).__init__(model)
         self.train_dataset = train_dataset
         self.valid_dataset = valid_dataset
         self.optimizer = self._get_optimizer(optimizer, model, lr)
+        self.loss = self._get_loss(loss)
         self.num_epoch = num_epoch
 
     def train(self):

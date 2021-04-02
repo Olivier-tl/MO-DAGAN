@@ -4,11 +4,10 @@ model:
   name: 'wgan'
   args:
     channels: 3
-    generator_iters: 100000
+    generator_iters: 10000
 
 optimizer:
   lr: 0.001
-
 
 dataset:
   validation_split: 0
