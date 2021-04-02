@@ -4,7 +4,7 @@ model:
   name: 'wgan'
   args:
     channels: 3
-    generator_iters: 100
+    generator_iters: 100000
 
 optimizer:
   lr: 0.001
@@ -12,5 +12,5 @@ optimizer:
 
 dataset:
   validation_split: 0
-  classes: [0, 1]
+  classes: [1]
   batch_size: 100

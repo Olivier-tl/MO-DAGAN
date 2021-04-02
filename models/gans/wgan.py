@@ -14,8 +14,6 @@ from utils import logging
 
 logger = logging.getLogger()
 
-SAVE_PER_TIMES = 100
-
 
 class WGAN(object):
     def __init__(self, args):
@@ -27,7 +25,6 @@ class WGAN(object):
         self.learning_rate = 1e-4
         self.b1 = 0.5
         self.b2 = 0.999
-        self.batch_size = 64
 
         # WGAN_gradient penalty uses ADAM
         self.d_optimizer = optim.Adam(self.D.parameters(), lr=self.learning_rate, betas=(self.b1, self.b2))
@@ -63,6 +60,7 @@ class WGAN(object):
     def to(self, device):
         self.G = self.G.to(device)
         self.D = self.D.to(device)
+        return self
 
 
 class Generator(torch.nn.Module):

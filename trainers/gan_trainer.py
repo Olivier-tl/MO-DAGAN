@@ -1,7 +1,10 @@
 # Heavily inspired from https://github.com/Zeleni9/pytorch-wgan/blob/master/models/wgan_gradient_penalty.py
 
+import os
+
 import torch
 from torch.utils.data import DataLoader
+from torch.autograd import Variable
 from torchvision import utils
 
 from utils import logging
@@ -10,6 +13,7 @@ from .trainer import Trainer
 logger = logging.getLogger()
 
 IMG_SAMPLES_PATH = 'output/gan_samples'
+SAVE_PER_TIMES = 100
 
 
 class GANTrainer(Trainer):
@@ -19,8 +23,10 @@ class GANTrainer(Trainer):
                  lr: float = 0.001,
                  optimizer: str = "adam",
                  loss: str = "cross_entropy"):
-        super(GANTrainer, self).__init__(model, lr, optimizer, loss)
+        super(GANTrainer, self).__init__(model, loss)
         self.dataset = dataset
+        self.d_optimizer = self._get_optimizer(optimizer, model.D, lr)
+        self.g_optimizer = self._get_optimizer(optimizer, model.G, lr)
 
     def train(self):
 
@@ -36,10 +42,10 @@ class GANTrainer(Trainer):
             d_loss_fake = 0
             Wasserstein_D = 0
 
-            for d_iter in range(self.critic_iter):
-                self.D.zero_grad()
+            for d_iter in range(self.model.critic_iter):
+                self.model.D.zero_grad()
 
-                images = self.dataset.__next__().to(self.device)
+                images = next(iter(self.dataset))[0].to(self.device)
 
                 # Check for batch to have full batch_size
                 if (images.size()[0] != self.dataset.batch_size):
@@ -50,15 +56,15 @@ class GANTrainer(Trainer):
                 # ---------------------
 
                 # Train with real images
-                d_loss_real = self.D(images)
+                d_loss_real = self.model.D(images)
                 d_loss_real = d_loss_real.mean()
                 d_loss_real.backward(mone)
 
                 # Train with fake images
                 z = torch.randn(self.dataset.batch_size, 100, 1, 1).to(self.device)
 
-                fake_images = self.G(z)
-                d_loss_fake = self.D(fake_images)
+                fake_images = self.model.G(z)
+                d_loss_fake = self.model.D(fake_images)
                 d_loss_fake = d_loss_fake.mean()
                 d_loss_fake.backward(one)
 
@@ -70,7 +76,7 @@ class GANTrainer(Trainer):
                 Wasserstein_D = d_loss_real - d_loss_fake
                 self.d_optimizer.step()
                 logger.info(
-                    f'  Discriminator iteration: {d_iter}/{self.critic_iter}, loss_fake: {d_loss_fake}, loss_real: {d_loss_real}'
+                    f'  Discriminator iteration: {d_iter}/{self.model.critic_iter}, loss_fake: {d_loss_fake}, loss_real: {d_loss_real}'
                 )
 
             # ---------------------
@@ -78,31 +84,31 @@ class GANTrainer(Trainer):
             # ---------------------
 
             # Generator update
-            for p in self.D.parameters():
+            for p in self.model.D.parameters():
                 p.requires_grad = False  # to avoid computation
 
-            self.G.zero_grad()
+            self.model.G.zero_grad()
 
             # compute loss with fake images
-            z = torch.randn(batch_size, 100, 1, 1)
-            fake_images = self.G(z)
-            g_loss = self.D(fake_images)
+            z = torch.randn(self.dataset.batch_size, 100, 1, 1).to(self.device)
+            fake_images = self.model.G(z)
+            g_loss = self.model.D(fake_images)
             g_loss = g_loss.mean()
             g_loss.backward(mone)
             g_cost = -g_loss
             self.g_optimizer.step()
-            logger.info(f'Generator iteration: {g_iter}/{self.generator_iters}, g_loss: {g_loss}')
+            logger.info(f'Generator iteration: {g_iter}/{self.model.generator_iters}, g_loss: {g_loss}')
 
             # Saving model and sampling images every 1000th generator iterations
             if (g_iter) % SAVE_PER_TIMES == 0:
-                self.save_model(epoch=g_iter)
+                self.save_model(desc=f'iter_{g_iter}')
 
                 if not os.path.exists(IMG_SAMPLES_PATH):
                     os.makedirs(IMG_SAMPLES_PATH)
 
                 # Denormalize images and save them in grid 8x8
-                z = self.get_torch_variable(torch.randn(800, 100, 1, 1))
-                samples = self.G(z)
+                z = torch.randn(800, 100, 1, 1).to(self.device)
+                samples = self.model.G(z)
                 samples = samples.mul(0.5).add(0.5)
                 samples = samples.data.cpu()[:64]
                 grid = utils.make_grid(samples)
@@ -113,12 +119,12 @@ class GANTrainer(Trainer):
                 #
 
         # All done. Save the trained parameters
-        self.save_model(epoch=g_iter)
+        self.save_model(desc='final_model')
 
     def test(self):
         # self.load_model(D_model_path, G_model_path)
-        z = torch.randn(self.batch_size, 100, 1, 1).to(self.device)
-        samples = self.G(z)
+        z = torch.randn(self.dataset.batch_size, 100, 1, 1).to(self.device)
+        samples = self.model.G(z)
         samples = samples.mul(0.5).add(0.5)
         samples = samples.data.cpu()
 
@@ -127,23 +133,23 @@ class GANTrainer(Trainer):
         utils.save_image(grid, 'final_gan_model_image.png')
 
     def _calculate_gradient_penalty(self, real_images, fake_images):
-        eta = torch.FloatTensor(self.batch_size, 1, 1, 1).uniform_(0, 1)
-        eta = eta.expand(self.batch_size, real_images.size(1), real_images.size(2), real_images.size(3)).to(self.device)
+        eta = torch.FloatTensor(self.dataset.batch_size, 1, 1, 1).uniform_(0, 1)
+        eta = eta.expand(self.dataset.batch_size, real_images.size(1), real_images.size(2),
+                         real_images.size(3)).to(self.device)
         interpolated = eta * real_images + ((1 - eta) * fake_images).to(self.device)
 
         # define it to calculate gradient
         interpolated = Variable(interpolated, requires_grad=True)
 
         # calculate probability of interpolated examples
-        prob_interpolated = self.D(interpolated)
+        prob_interpolated = self.model.D(interpolated)
 
         # calculate gradients of probabilities with respect to examples
-        gradients = autograd.grad(outputs=prob_interpolated,
-                                  inputs=interpolated,
-                                  grad_outputs=torch.ones(prob_interpolated.size()).cuda(self.cuda_index)
-                                  if self.cuda else torch.ones(prob_interpolated.size()),
-                                  create_graph=True,
-                                  retain_graph=True)[0]
+        gradients = torch.autograd.grad(outputs=prob_interpolated,
+                                        inputs=interpolated,
+                                        grad_outputs=torch.ones(prob_interpolated.size()).to(self.device),
+                                        create_graph=True,
+                                        retain_graph=True)[0]
 
-        grad_penalty = ((gradients.norm(2, dim=1) - 1)**2).mean() * self.lambda_term
+        grad_penalty = ((gradients.norm(2, dim=1) - 1)**2).mean() * self.model.lambda_term
         return grad_penalty

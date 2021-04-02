@@ -15,19 +15,17 @@ SAVED_MODELS_PATH = 'output/saved_models'
 class Trainer():
     """Parent to the trainers. Implement methods that are common across trainers.
     """
-    def __init__(self, model: torch.nn.Module, lr: float, optimizer: str, loss: str):
+    def __init__(self, model: torch.nn.Module, loss: str):
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.model = model.to(self.device)
-        self.lr = lr
-        self.optimizer = self._get_optimizer(optimizer)
         self.loss = self._get_loss(loss)
 
-    def _get_optimizer(self, opt):
+    def _get_optimizer(self, opt, model, lr):
         # NOTE: Might need to set more parameters
         if opt == "adam":
-            return optim.Adam(self.model.parameters(), self.lr)
+            return optim.Adam(model.parameters(), lr)
         elif opt == "sgd":
-            return optim.SGD(self.model.parameters(), self.lr)
+            return optim.SGD(model.parameters(), lr)
         else:
             logger.warning(f'Optimizer "{opt}" not recognized. Falling back to adam by default')
             return optim.Adam(self.model.parameters(), self.lr)
