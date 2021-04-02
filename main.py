@@ -34,6 +34,7 @@ def main(
     config = Config(config_path=config_path)
 
     # Load model
+    logger.info('Loading model...')
     model = ModelFactory.create(model_config=config.model_config)
 
     # Load dataset
@@ -46,6 +47,7 @@ def main(
                                                             batch_size=config.batch_size)
 
     # Instatiate trainer
+    logger.info('Loading trainer...')
     trainer = TrainerFactory.create(task=config.task,
                                     train_dataset=train_dataset,
                                     valid_dataset=valid_dataset,
@@ -54,10 +56,6 @@ def main(
     # Train
     logger.info('Training...')
     trainer.train()
-
-    # Test
-    logger.info('Testing...')
-    trainer.test()
 
     logger.info('all done :)')
 

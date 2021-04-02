@@ -1,6 +1,6 @@
 import torch
 
-from efficientnet_pytorch import EfficientNet
+from .classification import EfficientNetWrapper
 from .gans import WGAN
 from utils import AttrDict
 
@@ -8,7 +8,7 @@ from utils import AttrDict
 class ModelFactory:
     def create(model_config: dict) -> torch.nn.Module:
         if model_config['name'] == 'efficientnet':
-            model = EfficientNet.from_name('efficientnet-b7')
+            model = EfficientNetWrapper.from_name('efficientnet-b7')
         elif model_config['name'] == 'wgan':
             model = WGAN(AttrDict(model_config['args']))
         else:

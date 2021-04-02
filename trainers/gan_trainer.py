@@ -15,14 +15,14 @@ IMG_SAMPLES_PATH = 'output/gan_samples'
 class GANTrainer(Trainer):
     def __init__(self,
                  model: torch.nn.Module,
-                 train_dataset: DataLoader,
+                 dataset: DataLoader,
                  lr: float = 0.001,
                  optimizer: str = "adam",
                  loss: str = "cross_entropy"):
         super(GANTrainer, self).__init__(model, lr, optimizer, loss)
-        self.dataset = train_dataset
+        self.dataset = dataset
 
-    def train(self, train_loader):
+    def train(self):
 
         one = torch.tensor(1, dtype=torch.float).to(self.device)
         mone = (one * -1).to(self.device)
@@ -95,7 +95,7 @@ class GANTrainer(Trainer):
 
             # Saving model and sampling images every 1000th generator iterations
             if (g_iter) % SAVE_PER_TIMES == 0:
-                self.save_model()
+                self.save_model(epoch=g_iter)
 
                 if not os.path.exists(IMG_SAMPLES_PATH):
                     os.makedirs(IMG_SAMPLES_PATH)
@@ -106,16 +106,16 @@ class GANTrainer(Trainer):
                 samples = samples.mul(0.5).add(0.5)
                 samples = samples.data.cpu()[:64]
                 grid = utils.make_grid(samples)
-                utils.save_image(grid, os.path.join(IMG_SAMPLES_PATH, f'img_generator_iter_{g_iter}.png')
+                utils.save_image(grid, os.path.join(IMG_SAMPLES_PATH, f'img_generator_iter_{g_iter}.png'))
 
                 #
                 # TODO: Add WandB logging
                 #
 
-        # Save the trained parameters
-        self.save_model()
+        # All done. Save the trained parameters
+        self.save_model(epoch=g_iter)
 
-    def test(self, test_loader, D_model_path, G_model_path):
+    def test(self):
         # self.load_model(D_model_path, G_model_path)
         z = torch.randn(self.batch_size, 100, 1, 1).to(self.device)
         samples = self.G(z)

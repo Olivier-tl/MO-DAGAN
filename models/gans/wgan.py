@@ -19,10 +19,8 @@ SAVE_PER_TIMES = 100
 
 class WGAN(object):
     def __init__(self, args):
-        print("WGAN_GradientPenalty init model.")
-        device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-        self.G = Generator(args.channels).to(device)
-        self.D = Discriminator(args.channels).to(device)
+        self.G = Generator(args.channels)
+        self.D = Discriminator(args.channels)
         self.C = args.channels
 
         # WGAN values from paper
@@ -61,6 +59,10 @@ class WGAN(object):
         G_model_path = f'{path}_discriminator.pt'
         self.D.load_state_dict(torch.load(D_model_path))
         self.G.load_state_dict(torch.load(G_model_path))
+
+    def to(self, device):
+        self.G = self.G.to(device)
+        self.D = self.D.to(device)
 
 
 class Generator(torch.nn.Module):
