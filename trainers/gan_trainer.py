@@ -75,7 +75,7 @@ class GANTrainer(Trainer):
                 self.d_optimizer.step()
 
                 # Log to WandB
-                wandb.log({'d_loss_fake': d_loss_fake, 'd_loss_real': d_loss_real}, step=d_iter)
+                wandb.log({'d_loss_fake': d_loss_fake, 'd_loss_real': d_loss_real})
 
             # ---------------------
             # Train generator
@@ -97,7 +97,7 @@ class GANTrainer(Trainer):
             self.g_optimizer.step()
 
             # Log to WandB
-            wandb.log({'g_loss': g_loss}, step=g_iter)
+            wandb.log({'g_loss': g_loss})
 
             # Saving model and sampling images every 1000th generator iterations
             if (g_iter) % SAVE_PER_TIMES == 0:
