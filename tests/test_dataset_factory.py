@@ -31,7 +31,7 @@ class TestDatasetFactory:
         _, first_batch_counts = np.unique(valid_labels, return_counts=True)
         while True:
             try:
-                valid_data, valid_labels = next(valid_loader)
+                valid_data, valid_labels = next(dataloader_iterator)
             except:
                 break
         _, last_batch_counts = np.unique(valid_labels, return_counts=True)
