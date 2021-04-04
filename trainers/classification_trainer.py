@@ -4,7 +4,10 @@ import random
 from typing import Tuple
 
 import tqdm
+<<<<<<< HEAD
 import wandb
+=======
+>>>>>>> 4dfa308cb9aa3a159d3441f11f989d2c60e7e729
 import torch
 from torch.utils.data import DataLoader
 import numpy as np
@@ -59,7 +62,11 @@ class ClassificationTrainer(Trainer):
                     loss.backward()
                     self.optimizer.step()
 
+<<<<<<< HEAD
                     # compute accuracy
+=======
+                    # Compute accuracy
+>>>>>>> 4dfa308cb9aa3a159d3441f11f989d2c60e7e729
                     _, preds = torch.max(outputs.data, dim=1)
                     accuracy = (preds == labels).sum().float() / len(labels)
 
@@ -70,6 +77,7 @@ class ClassificationTrainer(Trainer):
 
                 total_loss /= len(self.train_dataset)
                 total_accuracy /= len(self.train_dataset)
+<<<<<<< HEAD
 
                 # log metrics
                 train_pbar.set_postfix({'loss': f'{total_loss:.3f}', 'accuracy': f'{total_accuracy:.3f}'})
@@ -82,6 +90,19 @@ class ClassificationTrainer(Trainer):
                 best_accuracy = valid_accuracy
 
         logger.info('Finished Training')
+=======
+                train_pbar.set_postfix({'loss': f'{total_loss:.3f}', 'accuracy': f'{total_accuracy:.3f}'})
+
+            # Validation
+            valid_loss, valid_accuracy = self.test(self.valid_dataset, desc='Validation')
+            if valid_accuracy > best_accuracy:
+                self.save_model(desc=f'best')
+                best_accuracy = valid_accuracy
+
+        logger.info('Finished Training')
+
+    def test(self, test_dataset: DataLoader, desc: str = 'test') -> Tuple[float, float]:
+>>>>>>> 4dfa308cb9aa3a159d3441f11f989d2c60e7e729
 
     def test(self, test_dataset: DataLoader, desc: str = 'test') -> Tuple[float, float]:
         self.model.eval()
@@ -90,6 +111,7 @@ class ClassificationTrainer(Trainer):
                 total_loss = 0.0
                 total_accuracy = 0.0
                 for i, data in test_pbar:
+<<<<<<< HEAD
 
                     inputs, labels = data[0].to(self.device), data[1].to(self.device)
 
@@ -107,4 +129,23 @@ class ClassificationTrainer(Trainer):
                 total_accuracy /= len(test_dataset)
                 test_pbar.set_postfix({'loss': f'{total_loss:.3f}', 'accuracy': f'{total_accuracy:.3f}'})
                 wandb.log({'valid_loss': total_loss, 'valid_accuracy': total_accuracy}, commit=True)
+=======
+
+                    inputs, labels = data[0].to(self.device), data[1].to(self.device)
+
+                    outputs = self.model(inputs)
+                    _, preds = torch.max(outputs.data, dim=1)
+
+                    loss = self.loss(outputs, labels)
+                    accuracy = (preds == labels).sum().float() / len(labels)
+
+                    test_pbar.set_postfix({'loss': f'{loss.item():.3f}', 'accuracy': f'{accuracy.item():.3f}'})
+                    total_loss += loss.item()
+                    total_accuracy += accuracy.item()
+
+                total_loss /= len(test_dataset)
+                total_accuracy /= len(test_dataset)
+                test_pbar.set_postfix({'loss': f'{total_loss:.3f}', 'accuracy': f'{total_accuracy:.3f}'})
+
+>>>>>>> 4dfa308cb9aa3a159d3441f11f989d2c60e7e729
         return total_loss, total_accuracy
