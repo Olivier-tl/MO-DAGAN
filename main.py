@@ -18,7 +18,6 @@ OUTPUT_PATH = 'output'
 WANDB_TEAM = 'game-theory'
 PROJECT_NAME = 'MO-DAGAN'
 
-<<<<<<< HEAD
 
 def main(
     config_path: str = 'configs/classification.yaml',
@@ -32,17 +31,6 @@ def main(
         os.mkdir(OUTPUT_PATH)
 
     # Set a seed
-=======
-
-def main(
-        config_path: str = 'configs/classification.yaml',
-        dataset_name: str = 'svhn',
-        imbalance_ratio: int = 1,
-        seed: int = 1,  # No seed if 0
-):
-
-    # Setting a seed
->>>>>>> 4dfa308cb9aa3a159d3441f11f989d2c60e7e729
     if seed:
         torch.manual_seed(seed)
         torch.cuda.manual_seed_all(seed)
@@ -89,12 +77,9 @@ def main(
     logger.info('Training...')
     trainer.train()
 
-<<<<<<< HEAD
     # Cleanup
     wandb.finish()
 
-=======
->>>>>>> 4dfa308cb9aa3a159d3441f11f989d2c60e7e729
     logger.info('all done :)')
 
 

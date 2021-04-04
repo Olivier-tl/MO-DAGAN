@@ -2,19 +2,13 @@
 
 import os
 
-<<<<<<< HEAD
 import wandb
-=======
->>>>>>> 4dfa308cb9aa3a159d3441f11f989d2c60e7e729
 import torch
 from torch.utils.data import DataLoader
 from torch.autograd import Variable
 from torchvision import utils
 from tqdm import tqdm
-<<<<<<< HEAD
 from PIL import Image
-=======
->>>>>>> 4dfa308cb9aa3a159d3441f11f989d2c60e7e729
 
 from utils import logging
 from .trainer import Trainer
@@ -80,15 +74,9 @@ class GANTrainer(Trainer):
                 Wasserstein_D = d_loss_real - d_loss_fake
                 self.d_optimizer.step()
 
-<<<<<<< HEAD
                 # Log to WandB
-                wandb.log({'d_loss_fake': d_loss_fake, 'd_loss_real': d_loss_real})
-=======
-                # TODO: Log to WandB
-                # logger.info(
-                #     f'  Discriminator iteration: {d_iter}/{self.model.critic_iter}, loss_fake: {d_loss_fake}, loss_real: {d_loss_real}'
-                # )
->>>>>>> 4dfa308cb9aa3a159d3441f11f989d2c60e7e729
+                overall_iter = g_iter * self.model.critic_iter + d_iter
+                wandb.log({'d_loss_fake': d_loss_fake, 'd_loss_real': d_loss_real, 'd_iter': overall_iter})
 
             # ---------------------
             # Train generator
@@ -109,13 +97,8 @@ class GANTrainer(Trainer):
             g_cost = -g_loss
             self.g_optimizer.step()
 
-<<<<<<< HEAD
             # Log to WandB
-            wandb.log({'g_loss': g_loss})
-=======
-            # TODO: Log to WandB
-            # logger.info(f'Generator iteration: {g_iter}/{self.model.generator_iters}, g_loss: {g_loss}')
->>>>>>> 4dfa308cb9aa3a159d3441f11f989d2c60e7e729
+            wandb.log({'g_loss': g_loss, 'g_iter': g_iter})
 
             # Saving model and sampling images every 1000th generator iterations
             if (g_iter) % SAVE_PER_TIMES == 0:
@@ -132,16 +115,10 @@ class GANTrainer(Trainer):
                 grid = utils.make_grid(samples)
                 utils.save_image(grid, os.path.join(IMG_SAMPLES_PATH, f'img_generator_iter_{g_iter}.png'))
 
-<<<<<<< HEAD
                 # Log to WandB
                 ndarr = grid.mul(255).add_(0.5).clamp_(0, 255).permute(1, 2, 0).to('cpu', torch.uint8).numpy()
                 im = Image.fromarray(ndarr)
-                wandb.log({'g_sample': wandb.Image(im)})
-=======
-                #
-                # TODO: Add WandB logging
-                #
->>>>>>> 4dfa308cb9aa3a159d3441f11f989d2c60e7e729
+                wandb.log({'g_sample': [wandb.Image(im, caption=f'g_iter_{g_iter}')]})
 
         # All done. Save the trained parameters
         self.save_model(desc='final_model')
