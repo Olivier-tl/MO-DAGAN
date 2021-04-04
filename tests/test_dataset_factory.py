@@ -1,5 +1,6 @@
 import pytest
 import torch
+import numpy as np
 
 from datasets import DatasetFactory
 
@@ -23,6 +24,20 @@ class TestDatasetFactory:
                                                                         classes=self.classes,
                                                                         batch_size=self.batch_size)
         yield train_loader, valid_loader, test_loader
+
+    def test_dataset_last_batch_has_proper_number_of_examples(self, dataset_factory):
+        _, valid_loader, _ = dataset_factory
+        valid_data, valid_labels = next(iter(valid_loader))
+        _, first_batch_counts = np.unique(valid_labels, return_counts=True)
+        while True:
+            try:
+                valid_data, valid_labels = next(dataloader_iterator)
+            except:
+                break
+        _, last_batch_counts = np.unique(valid_labels, return_counts=True)
+        assert len(first_batch_counts) == len(last_batch_counts)
+        for i in range(len(first_batch_counts)):
+            assert first_batch_counts[i]==last_batch_counts[i]
 
     def test_dataset_has_proper_shape(self, dataset_factory):
         train_loader, valid_loader, test_loader = dataset_factory
