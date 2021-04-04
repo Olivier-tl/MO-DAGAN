@@ -4,8 +4,12 @@ model:
   name: 'wgan'
   args:
     channels: 3
-    cuda: false
-    generator_iters: 2
+    generator_iters: 10000
 
 optimizer:
   lr: 0.001
+
+dataset:
+  validation_split: 0
+  classes: [1]
+  batch_size: 100

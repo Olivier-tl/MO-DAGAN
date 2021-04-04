@@ -14,11 +14,16 @@ logger = logging.getLogger()
 
 OUTPUT_PATH = 'output'
 
-def main(config_path: str = 'configs/classification.yaml', dataset_name: str = 'svhn', imbalance_ratio: int = 1):
+
+def main(
+        config_path: str = 'configs/classification.yaml',
+        dataset_name: str = 'svhn',
+        imbalance_ratio: int = 1,
+        seed: int = 1,  # No seed if 0
+):
 
     # Setting a seed
-    seed = 0 # otherwise seed = None
-    if seed :
+    if seed:
         torch.manual_seed(seed)
         torch.cuda.manual_seed_all(seed)
         np.random.seed(seed)
@@ -29,6 +34,7 @@ def main(config_path: str = 'configs/classification.yaml', dataset_name: str = '
     config = Config(config_path=config_path)
 
     # Load model
+    logger.info('Loading model...')
     model = ModelFactory.create(model_config=config.model_config)
 
     # Load dataset
@@ -41,6 +47,7 @@ def main(config_path: str = 'configs/classification.yaml', dataset_name: str = '
                                                             batch_size=config.batch_size)
 
     # Instatiate trainer
+    logger.info('Loading trainer...')
     trainer = TrainerFactory.create(task=config.task,
                                     train_dataset=train_dataset,
                                     valid_dataset=valid_dataset,
@@ -49,10 +56,6 @@ def main(config_path: str = 'configs/classification.yaml', dataset_name: str = '
     # Train
     logger.info('Training...')
     trainer.train()
-
-    # Test
-    logger.info('Testing...')
-    trainer.test()
 
     logger.info('all done :)')
 

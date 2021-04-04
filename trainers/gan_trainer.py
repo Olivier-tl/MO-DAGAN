@@ -1,17 +1,155 @@
+# Heavily inspired from https://github.com/Zeleni9/pytorch-wgan/blob/master/models/wgan_gradient_penalty.py
+
+import os
+
 import torch
 from torch.utils.data import DataLoader
+from torch.autograd import Variable
+from torchvision import utils
+from tqdm import tqdm
 
+from utils import logging
 from .trainer import Trainer
 
+logger = logging.getLogger()
 
-# TODO: Implement the gan trainer (issue #7)
+IMG_SAMPLES_PATH = 'output/gan_samples'
+SAVE_PER_TIMES = 500
+
+
 class GANTrainer(Trainer):
-    def __init__(self, model: torch.nn.Module, dataset: torch.utils.data.DataLoader):
-        self.model = model
+    def __init__(self, model: torch.nn.Module, dataset: DataLoader, lr: float = 0.001, optimizer: str = "adam"):
+        super(GANTrainer, self).__init__(model)
         self.dataset = dataset
+        self.d_optimizer = self._get_optimizer(optimizer, model.D, lr)
+        self.g_optimizer = self._get_optimizer(optimizer, model.G, lr)
 
     def train(self):
-        pass
+
+        one = torch.tensor(1, dtype=torch.float).to(self.device)
+        mone = (one * -1).to(self.device)
+
+        for g_iter in tqdm(range(self.model.generator_iters), desc='Generator Iterations'):
+
+            for p in self.model.D.parameters():
+                p.requires_grad = True
+
+            d_loss_real = 0
+            d_loss_fake = 0
+            Wasserstein_D = 0
+
+            for d_iter in range(self.model.critic_iter):
+                self.model.D.zero_grad()
+
+                images = next(iter(self.dataset))[0].to(self.device)
+
+                # Check for batch to have full batch_size
+                if (images.size()[0] != self.dataset.batch_size):
+                    continue
+
+                # ---------------------
+                # Train discriminator
+                # ---------------------
+
+                # Train with real images
+                d_loss_real = self.model.D(images)
+                d_loss_real = d_loss_real.mean()
+                d_loss_real.backward(mone)
+
+                # Train with fake images
+                z = torch.randn(self.dataset.batch_size, 100, 1, 1).to(self.device)
+
+                fake_images = self.model.G(z)
+                d_loss_fake = self.model.D(fake_images)
+                d_loss_fake = d_loss_fake.mean()
+                d_loss_fake.backward(one)
+
+                # Train with gradient penalty
+                gradient_penalty = self._calculate_gradient_penalty(images.data, fake_images.data)
+                gradient_penalty.backward()
+
+                d_loss = d_loss_fake - d_loss_real + gradient_penalty
+                Wasserstein_D = d_loss_real - d_loss_fake
+                self.d_optimizer.step()
+
+                # TODO: Log to WandB
+                # logger.info(
+                #     f'  Discriminator iteration: {d_iter}/{self.model.critic_iter}, loss_fake: {d_loss_fake}, loss_real: {d_loss_real}'
+                # )
+
+            # ---------------------
+            # Train generator
+            # ---------------------
+
+            # Generator update
+            for p in self.model.D.parameters():
+                p.requires_grad = False  # to avoid computation
+
+            self.model.G.zero_grad()
+
+            # compute loss with fake images
+            z = torch.randn(self.dataset.batch_size, 100, 1, 1).to(self.device)
+            fake_images = self.model.G(z)
+            g_loss = self.model.D(fake_images)
+            g_loss = g_loss.mean()
+            g_loss.backward(mone)
+            g_cost = -g_loss
+            self.g_optimizer.step()
+
+            # TODO: Log to WandB
+            # logger.info(f'Generator iteration: {g_iter}/{self.model.generator_iters}, g_loss: {g_loss}')
+
+            # Saving model and sampling images every 1000th generator iterations
+            if (g_iter) % SAVE_PER_TIMES == 0:
+                self.save_model(desc=f'iter_{g_iter}')
+
+                if not os.path.exists(IMG_SAMPLES_PATH):
+                    os.makedirs(IMG_SAMPLES_PATH)
+
+                # Denormalize images and save them in grid 8x8
+                z = torch.randn(800, 100, 1, 1).to(self.device)
+                samples = self.model.G(z)
+                samples = samples.mul(0.5).add(0.5)
+                samples = samples.data.cpu()[:64]
+                grid = utils.make_grid(samples)
+                utils.save_image(grid, os.path.join(IMG_SAMPLES_PATH, f'img_generator_iter_{g_iter}.png'))
+
+                #
+                # TODO: Add WandB logging
+                #
+
+        # All done. Save the trained parameters
+        self.save_model(desc='final_model')
 
     def test(self):
-        pass
+        # self.load_model(D_model_path, G_model_path)
+        z = torch.randn(self.dataset.batch_size, 100, 1, 1).to(self.device)
+        samples = self.model.G(z)
+        samples = samples.mul(0.5).add(0.5)
+        samples = samples.data.cpu()
+
+        # Save samples
+        grid = utils.make_grid(samples)
+        utils.save_image(grid, 'final_gan_model_image.png')
+
+    def _calculate_gradient_penalty(self, real_images, fake_images):
+        eta = torch.FloatTensor(self.dataset.batch_size, 1, 1, 1).uniform_(0, 1)
+        eta = eta.expand(self.dataset.batch_size, real_images.size(1), real_images.size(2),
+                         real_images.size(3)).to(self.device)
+        interpolated = eta * real_images + ((1 - eta) * fake_images).to(self.device)
+
+        # define it to calculate gradient
+        interpolated = Variable(interpolated, requires_grad=True)
+
+        # calculate probability of interpolated examples
+        prob_interpolated = self.model.D(interpolated)
+
+        # calculate gradients of probabilities with respect to examples
+        gradients = torch.autograd.grad(outputs=prob_interpolated,
+                                        inputs=interpolated,
+                                        grad_outputs=torch.ones(prob_interpolated.size()).to(self.device),
+                                        create_graph=True,
+                                        retain_graph=True)[0]
+
+        grad_penalty = ((gradients.norm(2, dim=1) - 1)**2).mean() * self.model.lambda_term
+        return grad_penalty

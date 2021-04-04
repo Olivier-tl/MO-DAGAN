@@ -1,1 +1,1 @@
-# from .efficient_net_wrapper import EfficientNetWrapper
+from .efficient_net import EfficientNetWrapper

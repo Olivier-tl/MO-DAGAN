@@ -1,20 +1,47 @@
-import abc
+import os
 
 import torch
+import torch.optim as optim
+import torch.nn as nn
 from torch.utils.data import DataLoader
 
+from utils import logging
 
-# TODO: (Suggestion, not necessarily needed) Implement an abstract trainer class that
-#        the classification trainer and gan trainer will inherit from.
-class Trainer(metaclass=abc.ABCMeta):
-    @abc.abstractmethod
-    def __init__(self, model: torch.nn.Module, train_dataset: DataLoader, valid_dataset: DataLoader):
-        pass
+logger = logging.getLogger()
 
-    @abc.abstractmethod
-    def train(self):
-        pass
+SAVED_MODELS_PATH = 'output/saved_models'
 
-    @abc.abstractmethod
-    def test(self):
-        pass
+
+class Trainer():
+    """Parent to the trainers. Implement methods that are common across trainers.
+    """
+    def __init__(self, model: torch.nn.Module):
+        self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+        self.model = model.to(self.device)
+
+    def _get_optimizer(self, opt, model, lr):
+        # NOTE: Might need to set more parameters
+        if opt == "adam":
+            return optim.Adam(model.parameters(), lr)
+        elif opt == "sgd":
+            return optim.SGD(model.parameters(), lr)
+        else:
+            logger.warning(f'Optimizer "{opt}" not recognized. Falling back to adam by default')
+            return optim.Adam(self.model.parameters(), self.lr)
+
+    def _get_loss(self, loss):
+        # NOTE: Might need to set more possible losses/criterions
+        if loss == "cross_entropy":
+            return nn.CrossEntropyLoss()
+        else:
+            logger.warning('Loss "{loss}" not recognized. Falling back to cross_entropy loss by default')
+            return nn.crossEntropyLoss()
+
+    def save_model(self, desc: str = ''):
+        path = os.path.join(SAVED_MODELS_PATH, self.model.__class__.__name__)
+        if not os.path.exists(path):
+            os.makedirs(path)
+        self.model.save_model(os.path.join(path, f'{self.model.__class__.__name__}_{desc}'))
+
+    def load_model(self, path: str):
+        self.model.load_model(path)

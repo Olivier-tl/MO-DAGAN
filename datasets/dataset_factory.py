@@ -8,13 +8,15 @@ from torch.utils.data import Dataset, DataLoader, random_split
 
 from .imbalanced_dataset_sampler import ImbalancedDatasetSampler
 
+CACHE_FOLDER = 'datasets'
+
 
 class DatasetFactory:
     """Constructs the appropriate dataset. Returns train, valid & test splits.
     """
     def create(dataset_name: str, imbalance_ratio: int, cache_path: str, validation_split: float,
                classes: typing.List[int], batch_size: int) -> typing.Tuple[DataLoader, DataLoader, DataLoader]:
-        save_path = os.path.join(cache_path, dataset_name)
+        save_path = os.path.join(cache_path, CACHE_FOLDER, dataset_name)
 
         # FIXME : Normalize using the actual mean and std of the dataset (issue #15)
         transform = transforms.Compose([transforms.ToTensor(), transforms.Normalize((0.5, ), (0.5, ))])
