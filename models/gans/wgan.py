@@ -16,10 +16,13 @@ logger = logging.getLogger()
 
 
 class WGAN(object):
-    def __init__(self, args):
-        self.G = Generator(args.channels)
-        self.D = Discriminator(args.channels)
-        self.C = args.channels
+    def __init__(self, args, in_dim):
+        channels = in_dim[0]
+        img_shape = in_dim[1]
+        self.G = Generator(channels)
+        self.D = Discriminator(channels, img_shape)
+        self.C = channels
+        self.img_shape = img_shape
 
         # WGAN values from paper
         self.learning_rate = 1e-4
@@ -42,9 +45,9 @@ class WGAN(object):
         generated_images = []
         for sample in samples:
             if self.C == 3:
-                generated_images.append(sample.reshape(self.C, 32, 32))
+                generated_images.append(sample.reshape(self.C, self.img_shape, self.img_shape))
             else:
-                generated_images.append(sample.reshape(32, 32))
+                generated_images.append(sample.reshape(self.img_shape, self.img_shape))
         return generated_images
 
     def save_model(self, path: str):
@@ -97,34 +100,45 @@ class Generator(torch.nn.Module):
 
 
 class Discriminator(torch.nn.Module):
-    def __init__(self, channels):
+    def __init__(self, channels, img_shape):
         super().__init__()
         # Filters [256, 512, 1024]
         # Input_dim = channels (Cx64x64)
         # Output_dim = 1
+        self.img_shape = img_shape
+
+        self._kernel_size = 4
+        self._stride = 2
+        self._padding = 1
         self.main_module = nn.Sequential(
             # Omitting batch normalization in critic because our new penalized training objective (WGAN with gradient penalty) is no longer valid
             # in this setting, since we penalize the norm of the critic's gradient with respect to each input independently and not the enitre batch.
             # There is not good & fast implementation of layer normalization --> using per instance normalization nn.InstanceNorm2d()
             # Image (Cx32x32)
-            nn.Conv2d(in_channels=channels, out_channels=256, kernel_size=4, stride=2, padding=1),
+            nn.Conv2d(in_channels=channels, out_channels=256, kernel_size=self._kernel_size, stride=self._stride, padding=self._padding),
             nn.InstanceNorm2d(256, affine=True),
             nn.LeakyReLU(0.2, inplace=True),
 
             # State (256x16x16)
-            nn.Conv2d(in_channels=256, out_channels=512, kernel_size=4, stride=2, padding=1),
+            nn.Conv2d(in_channels=256, out_channels=512, kernel_size=self._kernel_size, stride=self._stride, padding=self._padding),
             nn.InstanceNorm2d(512, affine=True),
             nn.LeakyReLU(0.2, inplace=True),
 
             # State (512x8x8)
-            nn.Conv2d(in_channels=512, out_channels=1024, kernel_size=4, stride=2, padding=1),
+            nn.Conv2d(in_channels=512, out_channels=1024, kernel_size=self._kernel_size, stride=self._stride, padding=self._padding),
             nn.InstanceNorm2d(1024, affine=True),
             nn.LeakyReLU(0.2, inplace=True))
         # output of main module --> State (1024x4x4)
 
         self.output = nn.Sequential(
             # The output of D is no longer a probability, we do not apply sigmoid at the output of D.
-            nn.Conv2d(in_channels=1024, out_channels=1, kernel_size=4, stride=1, padding=0))
+            nn.Conv2d(in_channels=1024, out_channels=1, kernel_size=self._kernel_size, stride=1, padding=0))
+
+        conv1_out_dim = (self.img_shape+(2*self._padding)-self._kernel_size)/self._stride+1
+        conv2_out_dim = (conv1_out_dim+(2*self._padding)-self._kernel_size)/self._stride+1
+
+        self.main_module_out_dim = (conv2_out_dim+(2*self._padding)-self._kernel_size)/self._stride+1
+        self.out_dim = (conv2_out_dim-self._kernel_size)+1
 
     def forward(self, x):
         x = self.main_module(x)

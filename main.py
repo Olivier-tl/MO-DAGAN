@@ -13,6 +13,13 @@ from utils import Config, logging
 logger = logging.getLogger()
 
 OUTPUT_PATH = 'output'
+DATASET_INPUT_SIZES = { 
+                        # dataset_name: (channels, img_size (assumed square))
+                        'mnist':(1, 28),
+                        'fashion-mnist':(1, 28),
+                        'cifar10':(3, 32),
+                        'svhn':(3, 32), 
+                        }
 
 
 def main(
@@ -35,7 +42,9 @@ def main(
 
     # Load model
     logger.info('Loading model...')
-    model = ModelFactory.create(model_config=config.model_config)
+    model_config = config.model_config
+    model_config['in_dim'] = DATASET_INPUT_SIZES[dataset_name]
+    model = ModelFactory.create(model_config=model_config)
 
     # Load dataset
     logger.info('Loading dataset...')
