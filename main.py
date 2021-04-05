@@ -1,6 +1,8 @@
+import os
 import random
 
 import fire
+import wandb
 import yaml
 import torch
 import numpy as np
@@ -20,16 +22,22 @@ DATASET_INPUT_SIZES = {
                         'cifar10':(3, 32),
                         'svhn':(3, 32), 
                         }
+WANDB_TEAM = 'game-theory'
+PROJECT_NAME = 'MO-DAGAN'
 
 
 def main(
-        config_path: str = 'configs/classification.yaml',
-        dataset_name: str = 'svhn',
-        imbalance_ratio: int = 1,
-        seed: int = 1,  # No seed if 0
+    config_path: str = 'configs/classification.yaml',
+    dataset_name: str = 'svhn',
+    imbalance_ratio: int = 1,
+    seed: int = 1,  # No seed if 0
+    wandb_logs: bool = True,
 ):
+    # Ensure output directory exists
+    if not os.path.exists(OUTPUT_PATH):
+        os.mkdir(OUTPUT_PATH)
 
-    # Setting a seed
+    # Set a seed
     if seed:
         torch.manual_seed(seed)
         torch.cuda.manual_seed_all(seed)
@@ -39,6 +47,18 @@ def main(
     # Load configuration
     logger.info(f'Loading config at "{config_path}"...')
     config = Config(config_path=config_path)
+
+    # Init logging with WandB
+    mode = 'offline' if wandb_logs else 'disabled'
+    wandb.init(mode=mode,
+               dir=OUTPUT_PATH,
+               entity=WANDB_TEAM,
+               project=PROJECT_NAME,
+               group=config.task,
+               config=config.config)
+    wandb_config = wandb.config
+    wandb_config.dataset_name = dataset_name
+    wandb_config.imbalance_ratio = imbalance_ratio
 
     # Load model
     logger.info('Loading model...')
@@ -65,6 +85,9 @@ def main(
     # Train
     logger.info('Training...')
     trainer.train()
+
+    # Cleanup
+    wandb.finish()
 
     logger.info('all done :)')
 

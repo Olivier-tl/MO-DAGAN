@@ -4,6 +4,7 @@ import random
 from typing import Tuple
 
 import tqdm
+import wandb
 import torch
 from torch.utils.data import DataLoader
 import numpy as np
@@ -58,7 +59,7 @@ class ClassificationTrainer(Trainer):
                     loss.backward()
                     self.optimizer.step()
 
-                    # Compute accuracy
+                    # compute accuracy
                     _, preds = torch.max(outputs.data, dim=1)
                     accuracy = (preds == labels).sum().float() / len(labels)
 
@@ -69,9 +70,12 @@ class ClassificationTrainer(Trainer):
 
                 total_loss /= len(self.train_dataset)
                 total_accuracy /= len(self.train_dataset)
-                train_pbar.set_postfix({'loss': f'{total_loss:.3f}', 'accuracy': f'{total_accuracy:.3f}'})
 
-            # Validation
+                # log metrics
+                train_pbar.set_postfix({'loss': f'{total_loss:.3f}', 'accuracy': f'{total_accuracy:.3f}'})
+                wandb.log({'train_loss': total_loss, 'train_accuracy': total_accuracy}, commit=False)
+
+            # validation
             valid_loss, valid_accuracy = self.test(self.valid_dataset, desc='Validation')
             if valid_accuracy > best_accuracy:
                 self.save_model(desc=f'best')
@@ -80,7 +84,6 @@ class ClassificationTrainer(Trainer):
         logger.info('Finished Training')
 
     def test(self, test_dataset: DataLoader, desc: str = 'test') -> Tuple[float, float]:
-
         self.model.eval()
         with torch.no_grad():
             with tqdm.tqdm(enumerate(test_dataset, 0), desc=desc, total=len(test_dataset)) as test_pbar:
@@ -103,5 +106,5 @@ class ClassificationTrainer(Trainer):
                 total_loss /= len(test_dataset)
                 total_accuracy /= len(test_dataset)
                 test_pbar.set_postfix({'loss': f'{total_loss:.3f}', 'accuracy': f'{total_accuracy:.3f}'})
-
+                wandb.log({'valid_loss': total_loss, 'valid_accuracy': total_accuracy}, commit=True)
         return total_loss, total_accuracy
