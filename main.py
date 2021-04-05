@@ -9,7 +9,6 @@ import numpy as np
 
 from models import ModelFactory
 from datasets import DatasetFactory
-from datasets import SyntheticDataset # delete after test !!!!!
 from trainers import TrainerFactory
 from utils import Config, logging
 
@@ -57,15 +56,6 @@ def main(
     # Load model
     logger.info('Loading model...')
     model = ModelFactory.create(model_config=config.model_config)
-
-    # delete after test !!!!!
-    #model.load_model("output/saved_models/WGAN/WGAN_iter_5000")
-    model.to(torch.device("cuda"))
-    syn_test_ds = SyntheticDataset(model, "bla")
-    print("allo")
-    for exemple in (iter(syn_test_ds)):
-        print(exemple[0][0][3,3])
-    quit()
 
     # Load dataset
     logger.info('Loading dataset...')
