@@ -3,7 +3,7 @@
 -f /cvmfs/soft.computecanada.ca/custom/python/wheelhouse/gentoo/generic
 -f /cvmfs/soft.computecanada.ca/custom/python/wheelhouse/generic
 attrs==20.3.0
-efficientnet-pytorch==0.3.0
+git+https://github.com/lukemelas/EfficientNet-PyTorch.git
 fire==0.4.0
 importlib-metadata==3.7.3
 iniconfig==1.1.1
