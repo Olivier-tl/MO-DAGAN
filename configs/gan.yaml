@@ -3,7 +3,6 @@ task: 'generation'
 model:
   name: 'wgan'
   args:
-    channels: 3
     generator_iters: 10000
 
 optimizer:
