@@ -2,7 +2,7 @@ import tqdm
 import numpy as np
 import torch
 
-def compute_ACSA_on_dataset(model, dataset, nb_classes=2, ):
+def compute_CSA_on_dataset(model, dataset, nb_classes=2, ):
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     confusion_matrix = torch.zeros(nb_classes, nb_classes)
     with tqdm.tqdm(enumerate(dataset, 0), desc='Computing ASCA', total=len(dataset)) as test_pbar:
@@ -18,7 +18,7 @@ def compute_ACSA_on_dataset(model, dataset, nb_classes=2, ):
             for label, pred in zip(labels.view(-1), preds.view(-1)):
                     confusion_matrix[label.long(), pred.long()] += 1
 
-    return get_ACSA(confusion_matrix)
+    return get_CSA(confusion_matrix)
 
 def compute_ACSA_on_tensors(preds, labels) -> list:
     confusion_matrix = get_confusion_matrix(preds, labels)
