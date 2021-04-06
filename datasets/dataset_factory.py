@@ -6,7 +6,10 @@ import torchvision
 import torchvision.transforms as transforms
 from torch.utils.data import Dataset, DataLoader, random_split
 
-from .imbalanced_dataset_sampler import ImbalancedDatasetSampler
+# from .imbalanced_dataset_sampler import ImbalancedDatasetSampler
+from .imbalanced_dataset import ImbalancedDataset
+from .synthetic_dataset import SyntheticDataset
+from .balanced_dataset import BalancedDataset
 
 CACHE_FOLDER = 'datasets'
 
@@ -40,10 +43,26 @@ class DatasetFactory:
         valid_length = int(validation_split * len(dataset))
         train_dataset, valid_dataset = random_split(dataset, [len(dataset) - valid_length, valid_length])
 
-        # Create samplers
-        train_sampler = ImbalancedDatasetSampler(train_dataset, imbalance_ratio, classes)
-        valid_sampler = ImbalancedDatasetSampler(valid_dataset, imbalance_ratio, classes)
-        test_sampler = ImbalancedDatasetSampler(test_dataset, imbalance_ratio=1, classes=classes)
+        # Create imbalanced dataset
+        train_dataset = ImbalancedDataset(train_dataset, imbalance_ratio, classes)
+        valid_dataset = ImbalancedDataset(valid_dataset, imbalance_ratio, classes)
+        test_dataset = ImbalancedDataset(test_dataset, imbalance_ratio=1, classes=classes)
+
+        if oversampling == 'oversampling':
+            # TODO: Implement oversampling of the minority class
+            raise NotImplemented('Oversampling of the minority class not implemented yet.')
+        elif oversampling == 'gan':
+            pass
+            # TODO: Build GAN here
+        elif oversampling == 'none':
+            pass  # Do nothing
+        else:
+            raise ValueError(f'Oversampling option "{oversampling}" not recognized.')
+
+        # FIXME: vvvvvvv REMOVE THIS vvvvvvvvv
+        # train_sampler = ImbalancedDatasetSampler(train_dataset, imbalance_ratio, classes)
+        # valid_sampler = ImbalancedDatasetSampler(valid_dataset, imbalance_ratio, classes)
+        # test_sampler = ImbalancedDatasetSampler(test_dataset, imbalance_ratio=1, classes=classes)
 
         # Create dataloaders
         train_loader = DataLoader(train_dataset, sampler=train_sampler, batch_size=batch_size)

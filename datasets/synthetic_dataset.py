@@ -1,7 +1,7 @@
 import torch
 
-class SyntheticDataset(torch.utils.data.IterableDataset):
 
+class SyntheticDataset(torch.utils.data.IterableDataset):
     def __init__(self, model: torch.nn.Module, label: str, buffer_size: int = 64):
         super(SyntheticDataset).__init__()
         self.model = model
