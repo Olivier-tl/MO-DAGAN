@@ -6,7 +6,6 @@ import torchvision
 import torchvision.transforms as transforms
 from torch.utils.data import Dataset, DataLoader, random_split
 
-# from .imbalanced_dataset_sampler import ImbalancedDatasetSampler
 from .imbalanced_dataset import ImbalancedDataset
 from .synthetic_dataset import SyntheticDataset
 from .balanced_dataset import BalancedDataset
@@ -60,16 +59,6 @@ class DatasetFactory:
             pass  # Do nothing
         else:
             raise ValueError(f'Oversampling option "{oversampling}" not recognized.')
-
-        # FIXME: vvvvvvv REMOVE THIS vvvvvvvvv
-        # train_sampler = ImbalancedDatasetSampler(train_dataset, imbalance_ratio, classes)
-        # valid_sampler = ImbalancedDatasetSampler(valid_dataset, imbalance_ratio, classes)
-        # test_sampler = ImbalancedDatasetSampler(test_dataset, imbalance_ratio=1, classes=classes)
-
-        # Create dataloaders
-        # train_loader = DataLoader(train_dataset, sampler=train_sampler, batch_size=batch_size)
-        # valid_loader = DataLoader(valid_dataset, sampler=valid_sampler, batch_size=batch_size)
-        # test_loader = DataLoader(test_dataset, sampler=test_sampler, batch_size=batch_size)
 
         train_loader = DataLoader(train_dataset, batch_size=batch_size)
         valid_loader = DataLoader(valid_dataset, batch_size=batch_size)

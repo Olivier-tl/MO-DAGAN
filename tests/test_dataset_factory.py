@@ -10,7 +10,7 @@ class TestDatasetFactory:
     dataset_name = 'svhn'
     imbalance_ratio = 10
     cache_path = 'output'
-    validation_split = 0.7
+    validation_split = 0.3
     batch_size = 100
     classes = [0, 1]
 
@@ -21,7 +21,19 @@ class TestDatasetFactory:
                                                                         cache_path=self.cache_path,
                                                                         validation_split=self.validation_split,
                                                                         classes=self.classes,
-                                                                        batch_size=self.batch_size)
+                                                                        batch_size=self.batch_size,
+                                                                        oversampling='none')
+        yield train_loader, valid_loader, test_loader
+
+    @pytest.fixture(scope="class")
+    def dataset_factory_balanced(self):
+        train_loader, valid_loader, test_loader = DatasetFactory.create(dataset_name=self.dataset_name,
+                                                                        imbalance_ratio=self.imbalance_ratio,
+                                                                        cache_path=self.cache_path,
+                                                                        validation_split=self.validation_split,
+                                                                        classes=self.classes,
+                                                                        batch_size=self.batch_size,
+                                                                        oversampling='gan')
         yield train_loader, valid_loader, test_loader
 
     def test_dataset_has_proper_shape(self, dataset_factory):
@@ -68,3 +80,15 @@ class TestDatasetFactory:
 
         observed_imbalance_ratio = label_count[self.classes[0]] / label_count[self.classes[1]]
         assert observed_imbalance_ratio == pytest.approx(1, abs=1e-1)
+
+    def test_oversampling_gan_is_balanced(self, dataset_factory_balanced):
+        train_loader, valid_loader, _ = dataset_factory_balanced
+
+        for loader in (train_loader, valid_loader):
+            label_count = {self.classes[0]: 0, self.classes[1]: 1}
+            for _, labels in loader:
+                for label in labels:
+                    label_count[label.item()] += 1
+
+            observed_imbalance_ratio = label_count[self.classes[0]] / label_count[self.classes[1]]
+            assert observed_imbalance_ratio == pytest.approx(1, abs=1e-1)
