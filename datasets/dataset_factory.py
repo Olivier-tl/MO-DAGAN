@@ -18,7 +18,8 @@ class DatasetFactory:
     """Constructs the appropriate dataset. Returns train, valid & test splits.
     """
     def create(dataset_name: str, imbalance_ratio: int, cache_path: str, validation_split: float,
-               classes: typing.List[int], batch_size: int) -> typing.Tuple[DataLoader, DataLoader, DataLoader]:
+               classes: typing.List[int], batch_size: int,
+               oversampling: str) -> typing.Tuple[DataLoader, DataLoader, DataLoader]:
         save_path = os.path.join(cache_path, CACHE_FOLDER, dataset_name)
 
         # FIXME : Normalize using the actual mean and std of the dataset (issue #15)
@@ -39,21 +40,22 @@ class DatasetFactory:
         else:
             raise ValueError(f'dataset_name "{dataset_name}" not recognized.')
 
-        # Split dataset into train/valid
-        valid_length = int(validation_split * len(dataset))
-        train_dataset, valid_dataset = random_split(dataset, [len(dataset) - valid_length, valid_length])
-
         # Create imbalanced dataset
-        train_dataset = ImbalancedDataset(train_dataset, imbalance_ratio, classes)
-        valid_dataset = ImbalancedDataset(valid_dataset, imbalance_ratio, classes)
+        train_dataset = ImbalancedDataset(dataset, imbalance_ratio, classes)
+        # valid_dataset = ImbalancedDataset(valid_dataset, imbalance_ratio, classes)
         test_dataset = ImbalancedDataset(test_dataset, imbalance_ratio=1, classes=classes)
+
+        # Split dataset into train/valid
+        valid_length = int(validation_split * len(train_dataset))
+        train_dataset, valid_dataset = random_split(train_dataset, [len(train_dataset) - valid_length, valid_length])
 
         if oversampling == 'oversampling':
             # TODO: Implement oversampling of the minority class
             raise NotImplemented('Oversampling of the minority class not implemented yet.')
         elif oversampling == 'gan':
-            pass
-            # TODO: Build GAN here
+            synthetic_dataset = SyntheticDataset()
+            train_dataset = BalancedDataset(train_dataset, synthetic_dataset)
+            valid_dataset = BalancedDataset(valid_dataset, synthetic_dataset)
         elif oversampling == 'none':
             pass  # Do nothing
         else:
@@ -65,8 +67,12 @@ class DatasetFactory:
         # test_sampler = ImbalancedDatasetSampler(test_dataset, imbalance_ratio=1, classes=classes)
 
         # Create dataloaders
-        train_loader = DataLoader(train_dataset, sampler=train_sampler, batch_size=batch_size)
-        valid_loader = DataLoader(valid_dataset, sampler=valid_sampler, batch_size=batch_size)
-        test_loader = DataLoader(test_dataset, sampler=test_sampler, batch_size=batch_size)
+        # train_loader = DataLoader(train_dataset, sampler=train_sampler, batch_size=batch_size)
+        # valid_loader = DataLoader(valid_dataset, sampler=valid_sampler, batch_size=batch_size)
+        # test_loader = DataLoader(test_dataset, sampler=test_sampler, batch_size=batch_size)
+
+        train_loader = DataLoader(train_dataset, batch_size=batch_size)
+        valid_loader = DataLoader(valid_dataset, batch_size=batch_size)
+        test_loader = DataLoader(test_dataset, batch_size=batch_size)
 
         return train_loader, valid_loader, test_loader

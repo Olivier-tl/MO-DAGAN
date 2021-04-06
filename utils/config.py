@@ -14,6 +14,7 @@ class Config:
         self.validation_split = self.config['dataset']['validation_split']
         self.classes = self.config['dataset']['classes']
         self.batch_size = self.config['dataset']['batch_size']
+        self.oversampling = self.config['dataset']['oversampling']
 
     def print(self):
         pprint.pprint(self.config)

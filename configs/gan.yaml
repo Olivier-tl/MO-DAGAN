@@ -2,6 +2,7 @@ task: 'generation'
 
 model:
   name: 'wgan'
+  saved_model: '' # Path to saved model
   args:
     generator_iters: 10000
 
@@ -12,3 +13,5 @@ dataset:
   validation_split: 0
   classes: [1]
   batch_size: 100
+  oversampling: 'none'
+  saved_model: ''

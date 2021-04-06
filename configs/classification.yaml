@@ -2,6 +2,7 @@ task: 'classification'
 
 model:
   name: 'efficientnet'
+  saved_model: '' # Path to saved model
 
 optimizer:
   lr: 0.001
@@ -10,6 +11,8 @@ dataset:
   validation_split: 0.3
   classes: [0, 1]
   batch_size: 100
+  oversampling: 'gan' # none, oversampling or gan
+  saved_model: '' # path to saved model if oversampling is gan
 
 
 

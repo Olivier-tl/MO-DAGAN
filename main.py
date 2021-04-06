@@ -15,13 +15,13 @@ from utils import Config, logging
 logger = logging.getLogger()
 
 OUTPUT_PATH = 'output'
-DATASET_INPUT_SIZES = { 
-                        # dataset_name: (channels, img_size (assumed square))
-                        'mnist':(1, 28),
-                        'fashion-mnist':(1, 28),
-                        'cifar10':(3, 32),
-                        'svhn':(3, 32), 
-                        }
+DATASET_INPUT_SIZES = {
+    # dataset_name: (channels, img_size (assumed square))
+    'mnist': (1, 28),
+    'fashion-mnist': (1, 28),
+    'cifar10': (3, 32),
+    'svhn': (3, 32),
+}
 WANDB_TEAM = 'game-theory'
 PROJECT_NAME = 'MO-DAGAN'
 
@@ -29,10 +29,9 @@ PROJECT_NAME = 'MO-DAGAN'
 def main(
     config_path: str = 'configs/classification.yaml',
     dataset_name: str = 'svhn',
-    #imbalance_ratio: int = 1,
-    imbalance_ratio: int = 10,  # DELEETE ME
+    imbalance_ratio: int = 10,
     seed: int = 1,  # No seed if 0
-    wandb_logs: bool = True,
+    wandb_logs: bool = False,
 ):
     # Ensure output directory exists
     if not os.path.exists(OUTPUT_PATH):
@@ -74,25 +73,8 @@ def main(
                                                             cache_path=OUTPUT_PATH,
                                                             validation_split=config.validation_split,
                                                             classes=config.classes,
-                                                            batch_size=config.batch_size)
-
-    # delete after test !!!!!
-    #model.load_model("output/saved_models/WGAN/WGAN_iter_5000")
-    config2 = Config(config_path="configs/gan.yaml")
-    model = ModelFactory.create(model_config=config2.model_config)
-    model.to(torch.device("cuda"))
-    syn_test_ds = SyntheticDataset(model, 1)
-    print("allo")
-    #for exemple in (iter(syn_test_ds)):
-    #    print(exemple[0][0][3,3])
-    from collections import Counter
-    #print(dict(Counter((train_dataset.dataset).targets)))
-    bal_test_ds = BalancedDataset(train_dataset.dataset, syn_test_ds)
-    print(bal_test_ds.get_class_count(train_dataset.dataset))
-    print(bal_test_ds.get_class_count(bal_test_ds))
-    #print(dict(Counter(bal_test_ds.targets)))
-
-    quit()
+                                                            batch_size=config.batch_size,
+                                                            oversampling=config.oversampling)
 
     # Instatiate trainer
     logger.info('Loading trainer...')
