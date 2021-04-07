@@ -5,7 +5,7 @@ from models import ModelFactory
 # FIXME: Move to dataset yaml configuration file
 GAN_CONFIG = {
     'name': 'wgan',
-    'saved_model': '',  #'output/saved_models/WGAN/WGAN_iter_4500',
+    'saved_model': 'output/saved_models/WGAN/WGAN_iter_5000',
     'in_dim': (3, 32),
     'args': {
         'generator_iters': 10000
@@ -29,7 +29,7 @@ class SyntheticDataset(torch.utils.data.IterableDataset):
         z = torch.randn(self.buffer_size, 100, 1, 1).to(self.device)
         samples = self.model.G(z)
         samples = samples.mul(0.5).add(0.5)
-        return samples.cpu()  # Move on cpu because other datasets are on cpu before being copied to gpu
+        return samples.detach().cpu()  # Move on cpu because other datasets are on cpu before being copied to gpu
 
     def __iter__(self):
         while True:

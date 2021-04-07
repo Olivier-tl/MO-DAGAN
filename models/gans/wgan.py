@@ -55,8 +55,8 @@ class WGAN(object):
         torch.save(self.D.state_dict(), f'{path}_discriminator.pt')
 
     def load_model(self, path: str):
-        D_model_path = f'{path}_generator.pt'
-        G_model_path = f'{path}_discriminator.pt'
+        D_model_path = f'{path}_discriminator.pt'
+        G_model_path = f'{path}_generator.pt'
         self.D.load_state_dict(torch.load(D_model_path))
         self.G.load_state_dict(torch.load(G_model_path))
 

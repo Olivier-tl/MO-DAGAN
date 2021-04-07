@@ -12,6 +12,9 @@ class BalancedDataset(torch.utils.data.IterableDataset):
 
         self.num_new_sample = max(self.class_count.values()) - min(self.class_count.values())
         print('number of new samples : ', self.num_new_sample)
+        print('total number of examples: ', len(self.unbalanced_dataset))
+        print('number of example in the minority class : ', min(self.class_count.values()))
+        print('number of example in the majority class : ', max(self.class_count.values()))
 
         self.ratio = self.num_new_sample / (self.num_new_sample + len(self.unbalanced_dataset))
         print('ratio : ', self.ratio)
