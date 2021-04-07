@@ -10,7 +10,7 @@ from torchvision import utils
 from tqdm import tqdm
 from PIL import Image
 
-from utils import logging
+from utils import logging, Config
 from .trainer import Trainer
 
 logger = logging.getLogger()
@@ -20,18 +20,19 @@ SAVE_PER_TIMES = 500
 
 
 class GANTrainer(Trainer):
-    def __init__(self, model: torch.nn.Module, dataset: DataLoader, lr: float = 0.001, optimizer: str = "adam"):
+    def __init__(self, trainer_config: Config.Trainer, model: torch.nn.Module, dataset: DataLoader):
         super(GANTrainer, self).__init__(model)
         self.dataset = dataset
-        self.d_optimizer = self._get_optimizer(optimizer, model.D, lr)
-        self.g_optimizer = self._get_optimizer(optimizer, model.G, lr)
+        self.d_optimizer = self._get_optimizer(trainer_config.optimizer, model.D, trainer_config.lr)
+        self.g_optimizer = self._get_optimizer(trainer_config.optimizer, model.G, trainer_config.lr)
+        self.generator_iters = trainer_config.epochs
 
     def train(self):
 
         one = torch.tensor(1, dtype=torch.float).to(self.device)
         mone = (one * -1).to(self.device)
 
-        for g_iter in tqdm(range(self.model.generator_iters), desc='Generator Iterations'):
+        for g_iter in tqdm(range(self.generator_iters), desc='Generator Iterations'):
 
             for p in self.model.D.parameters():
                 p.requires_grad = True

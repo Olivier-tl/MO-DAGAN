@@ -9,7 +9,7 @@ import torch
 from torch.utils.data import DataLoader
 import numpy as np
 
-from utils import logging
+from utils import logging, Config
 from .trainer import Trainer
 
 logger = logging.getLogger()
@@ -20,20 +20,14 @@ class ClassificationTrainer(Trainer):
     an untrained net using splitted train data and test the trained net 
     using the splitted test data. 
     """
-    def __init__(self,
-                 model: torch.nn.Module,
-                 train_dataset: DataLoader,
-                 valid_dataset: DataLoader,
-                 lr: float = 0.001,
-                 optimizer: str = "adam",
-                 loss: str = "cross_entropy",
-                 num_epoch: int = 10):
+    def __init__(self, trainer_config: Config.Trainer, model: torch.nn.Module, train_dataset: DataLoader,
+                 valid_dataset: DataLoader):
         super(ClassificationTrainer, self).__init__(model)
         self.train_dataset = train_dataset
         self.valid_dataset = valid_dataset
-        self.optimizer = self._get_optimizer(optimizer, model, lr)
-        self.loss = self._get_loss(loss)
-        self.num_epoch = num_epoch
+        self.optimizer = self._get_optimizer(trainer_config.optimizer, model, trainer_config.lr)
+        self.loss = self._get_loss(trainer_config.loss)
+        self.num_epoch = trainer_config.epochs
 
     def train(self):
         best_accuracy = 0

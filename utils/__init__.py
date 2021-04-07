@@ -1,2 +1,2 @@
-from .config import Config, logging
+from .config import load_config, Config
 from .misc import AttrDict

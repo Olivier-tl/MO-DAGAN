@@ -16,13 +16,11 @@ logger = logging.getLogger()
 
 
 class WGAN(object):
-    def __init__(self, args, in_dim):
-        channels = in_dim[0]
-        img_shape = in_dim[1]
-        self.G = Generator(channels)
-        self.D = Discriminator(channels, img_shape)
-        self.C = channels
+    def __init__(self, channels: int, img_shape: int):
         self.img_shape = img_shape
+        self.C = channels
+        self.G = Generator(self.C)
+        self.D = Discriminator(self.C, img_shape)
 
         # WGAN values from paper
         self.learning_rate = 1e-4
@@ -36,7 +34,6 @@ class WGAN(object):
         # Set the logger
         self.number_of_images = 10
 
-        self.generator_iters = args.generator_iters
         self.critic_iter = 5
         self.lambda_term = 10
 

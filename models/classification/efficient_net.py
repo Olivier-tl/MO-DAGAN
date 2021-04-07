@@ -15,5 +15,5 @@ class EfficientNetWrapper(EfficientNet):
     def load_model(self, path: str):
         self.load_state_dict(torch.load(f'{path}.pt'))
 
-    def from_name(name: str, in_dim: tuple) -> EfficientNet:
-        return EfficientNetWrapper(EfficientNet.from_name(name, in_channels=in_dim[0], image_size=in_dim[1]))
+    def from_name(name: str, in_channels: int, image_size: int) -> EfficientNet:
+        return EfficientNetWrapper(EfficientNet.from_name(name, in_channels=in_channels, image_size=image_size))
