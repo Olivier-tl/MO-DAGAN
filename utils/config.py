@@ -22,6 +22,8 @@ def load_config(path: str, dataset_name: str, imbalance_ratio: int, oversampling
     config.dataset.oversampling = oversampling
     config.model.input_channels = DATASET_INPUT_SIZES[dataset_name][0]
     config.model.output_size = DATASET_INPUT_SIZES[dataset_name][1]
+    config.dataset.gan_model.input_channels = DATASET_INPUT_SIZES[dataset_name][0]
+    config.dataset.gan_model.output_size = DATASET_INPUT_SIZES[dataset_name][1]
     return config
 
 
@@ -44,11 +46,21 @@ class Config:
 
     @dataclass
     class Dataset:
+
+        # FIXME: Ideally we would reuse the Model class above but
+        #        it is not defined inside the Dataset class
+        @dataclass
+        class Model:
+            name: str = None
+            saved_model: str = None
+            input_channels: int = None
+            output_size: int = None  # assumed square (eg: 32 -> 32x32)
+
         name: str = None
         validation_split: float = None
         classes: typing.List[int] = None
         oversampling: str = None  # none, oversampling, gan
-        gan_model: typing.Any = None  # model config if oversampling is gan
+        gan_model: Model = None  # model config if oversampling is gan
         imbalance_ratio: int = None  # IR = n_maj_class / n_min_class
         batch_size: int = None
 

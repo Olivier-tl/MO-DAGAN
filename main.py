@@ -1,10 +1,9 @@
 import os
 import random
-import dataclasses  # FIXME: REMOVE
+import dataclasses
 
 import fire
 import wandb
-import yaml
 import torch
 import numpy as np
 
@@ -43,8 +42,6 @@ def main(
     logger.info(f'Loading config at "{config_path}"...')
     config = load_config(config_path, dataset_name, imbalance_ratio, oversampling)
 
-    # print(dataclasses.asdict(config)) FIXME: REMOVE
-
     # Init logging with WandB
     mode = 'offline' if wandb_logs else 'disabled'
     wandb.init(mode=mode,
@@ -52,7 +49,7 @@ def main(
                entity=WANDB_TEAM,
                project=PROJECT_NAME,
                group=config.trainer.task,
-               config=config)
+               config=dataclasses.asdict(config))
 
     # Load model
     logger.info('Loading model...')

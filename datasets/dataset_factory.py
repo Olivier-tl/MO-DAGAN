@@ -48,7 +48,7 @@ class DatasetFactory:
 
         if dataset_config.oversampling == 'oversampling':
             # TODO: Implement oversampling of the minority class
-            raise NotImplemented('Oversampling of the minority class not implemented yet.')
+            raise NotImplementedError('Oversampling of the minority class not implemented yet.')
         elif dataset_config.oversampling == 'gan':
             synthetic_dataset = SyntheticDataset(dataset_config.gan_model)
             train_dataset = BalancedDataset(train_dataset, synthetic_dataset)
@@ -56,7 +56,7 @@ class DatasetFactory:
         elif dataset_config.oversampling == 'none':
             pass  # Do nothing
         else:
-            raise ValueError(f'Oversampling option "{oversampling}" not recognized.')
+            raise ValueError(f'Oversampling option "{dataset_config.oversampling}" not recognized.')
 
         train_loader = DataLoader(train_dataset, batch_size=dataset_config.batch_size)
         valid_loader = DataLoader(valid_dataset, batch_size=dataset_config.batch_size)

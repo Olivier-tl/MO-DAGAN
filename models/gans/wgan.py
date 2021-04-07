@@ -1,14 +1,8 @@
 # From https://github.com/Zeleni9/pytorch-wgan/blob/master/models/wgan_gradient_penalty.py
 
-import os
-from itertools import chain
-
 import torch
 import torch.nn as nn
 import torch.optim as optim
-from torch import autograd
-from torch.autograd import Variable
-from torchvision import utils as utils
 
 from utils import logging
 
