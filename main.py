@@ -70,6 +70,7 @@ def main(
     logger.info('Loading dataset...')
     train_dataset, valid_dataset, _ = DatasetFactory.create(dataset_name=dataset_name,
                                                             imbalance_ratio=imbalance_ratio,
+                                                            force_balance=False,
                                                             cache_path=OUTPUT_PATH,
                                                             validation_split=config.validation_split,
                                                             classes=config.classes,
