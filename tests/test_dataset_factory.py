@@ -18,6 +18,7 @@ class TestDatasetFactory:
     def dataset_factory(self):
         train_loader, valid_loader, test_loader = DatasetFactory.create(dataset_name=self.dataset_name,
                                                                         imbalance_ratio=self.imbalance_ratio,
+                                                                        force_balance=False,
                                                                         cache_path=self.cache_path,
                                                                         validation_split=self.validation_split,
                                                                         classes=self.classes,
