@@ -1,27 +1,20 @@
 import os
 import random
+import dataclasses
 
 import fire
 import wandb
-import yaml
 import torch
 import numpy as np
 
 from models import ModelFactory
 from datasets import DatasetFactory
 from trainers import TrainerFactory
-from utils import Config, logging
+from utils import load_config, logging
 
 logger = logging.getLogger()
 
 OUTPUT_PATH = 'output'
-DATASET_INPUT_SIZES = { 
-                        # dataset_name: (channels, img_size (assumed square))
-                        'mnist':(1, 28),
-                        'fashion-mnist':(1, 28),
-                        'cifar10':(3, 32),
-                        'svhn':(3, 32), 
-                        }
 WANDB_TEAM = 'game-theory'
 PROJECT_NAME = 'MO-DAGAN'
 
@@ -29,9 +22,10 @@ PROJECT_NAME = 'MO-DAGAN'
 def main(
     config_path: str = 'configs/classification.yaml',
     dataset_name: str = 'svhn',
-    imbalance_ratio: int = 1,
+    imbalance_ratio: int = 10,
+    oversampling: str = 'none',  # none, oversampling, gan
     seed: int = 1,  # No seed if 0
-    wandb_logs: bool = True,
+    wandb_logs: bool = False,
 ):
     # Ensure output directory exists
     if not os.path.exists(OUTPUT_PATH):
@@ -46,7 +40,7 @@ def main(
 
     # Load configuration
     logger.info(f'Loading config at "{config_path}"...')
-    config = Config(config_path=config_path)
+    config = load_config(config_path, dataset_name, imbalance_ratio, oversampling)
 
     # Init logging with WandB
     mode = 'offline' if wandb_logs else 'disabled'
@@ -54,30 +48,20 @@ def main(
                dir=OUTPUT_PATH,
                entity=WANDB_TEAM,
                project=PROJECT_NAME,
-               group=config.task,
-               config=config.config)
-    wandb_config = wandb.config
-    wandb_config.dataset_name = dataset_name
-    wandb_config.imbalance_ratio = imbalance_ratio
+               group=config.trainer.task,
+               config=dataclasses.asdict(config))
 
     # Load model
     logger.info('Loading model...')
-    model_config = config.model_config
-    model_config['in_dim'] = DATASET_INPUT_SIZES[dataset_name]
-    model = ModelFactory.create(model_config=model_config)
+    model = ModelFactory.create(model_config=config.model)
 
     # Load dataset
     logger.info('Loading dataset...')
-    train_dataset, valid_dataset, _ = DatasetFactory.create(dataset_name=dataset_name,
-                                                            imbalance_ratio=imbalance_ratio,
-                                                            cache_path=OUTPUT_PATH,
-                                                            validation_split=config.validation_split,
-                                                            classes=config.classes,
-                                                            batch_size=config.batch_size)
+    train_dataset, valid_dataset, _ = DatasetFactory.create(dataset_config=config.dataset)
 
     # Instatiate trainer
     logger.info('Loading trainer...')
-    trainer = TrainerFactory.create(task=config.task,
+    trainer = TrainerFactory.create(trainer_config=config.trainer,
                                     train_dataset=train_dataset,
                                     valid_dataset=valid_dataset,
                                     model=model)
