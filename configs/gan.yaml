@@ -1,14 +1,18 @@
-task: 'generation'
-
 model:
   name: 'wgan'
-  args:
-    generator_iters: 10000
+  saved_model: '' # Path to saved model
 
-optimizer:
+trainer:
+  task: 'generation'
   lr: 0.001
+  optimizer: 'adam'
+  epochs: 10000 # here, epochs refers to the number of generator iterations
 
 dataset:
   validation_split: 0
   classes: [1]
   batch_size: 100
+  oversampling: 'none'
+  gan_model:
+    name: '' 
+    saved_model: ''

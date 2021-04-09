@@ -1,14 +1,8 @@
 # From https://github.com/Zeleni9/pytorch-wgan/blob/master/models/wgan_gradient_penalty.py
 
-import os
-from itertools import chain
-
 import torch
 import torch.nn as nn
 import torch.optim as optim
-from torch import autograd
-from torch.autograd import Variable
-from torchvision import utils as utils
 
 from utils import logging
 
@@ -16,13 +10,11 @@ logger = logging.getLogger()
 
 
 class WGAN(object):
-    def __init__(self, args, in_dim):
-        channels = in_dim[0]
-        img_shape = in_dim[1]
-        self.G = Generator(channels)
-        self.D = Discriminator(channels, img_shape)
-        self.C = channels
+    def __init__(self, channels: int, img_shape: int):
         self.img_shape = img_shape
+        self.C = channels
+        self.G = Generator(self.C)
+        self.D = Discriminator(self.C, img_shape)
 
         # WGAN values from paper
         self.learning_rate = 1e-4
@@ -36,7 +28,6 @@ class WGAN(object):
         # Set the logger
         self.number_of_images = 10
 
-        self.generator_iters = args.generator_iters
         self.critic_iter = 5
         self.lambda_term = 10
 
@@ -55,8 +46,8 @@ class WGAN(object):
         torch.save(self.D.state_dict(), f'{path}_discriminator.pt')
 
     def load_model(self, path: str):
-        D_model_path = f'{path}_generator.pt'
-        G_model_path = f'{path}_discriminator.pt'
+        D_model_path = f'{path}_discriminator.pt'
+        G_model_path = f'{path}_generator.pt'
         self.D.load_state_dict(torch.load(D_model_path))
         self.G.load_state_dict(torch.load(G_model_path))
 
@@ -115,17 +106,29 @@ class Discriminator(torch.nn.Module):
             # in this setting, since we penalize the norm of the critic's gradient with respect to each input independently and not the enitre batch.
             # There is not good & fast implementation of layer normalization --> using per instance normalization nn.InstanceNorm2d()
             # Image (Cx32x32)
-            nn.Conv2d(in_channels=channels, out_channels=256, kernel_size=self._kernel_size, stride=self._stride, padding=self._padding),
+            nn.Conv2d(in_channels=channels,
+                      out_channels=256,
+                      kernel_size=self._kernel_size,
+                      stride=self._stride,
+                      padding=self._padding),
             nn.InstanceNorm2d(256, affine=True),
             nn.LeakyReLU(0.2, inplace=True),
 
             # State (256x16x16)
-            nn.Conv2d(in_channels=256, out_channels=512, kernel_size=self._kernel_size, stride=self._stride, padding=self._padding),
+            nn.Conv2d(in_channels=256,
+                      out_channels=512,
+                      kernel_size=self._kernel_size,
+                      stride=self._stride,
+                      padding=self._padding),
             nn.InstanceNorm2d(512, affine=True),
             nn.LeakyReLU(0.2, inplace=True),
 
             # State (512x8x8)
-            nn.Conv2d(in_channels=512, out_channels=1024, kernel_size=self._kernel_size, stride=self._stride, padding=self._padding),
+            nn.Conv2d(in_channels=512,
+                      out_channels=1024,
+                      kernel_size=self._kernel_size,
+                      stride=self._stride,
+                      padding=self._padding),
             nn.InstanceNorm2d(1024, affine=True),
             nn.LeakyReLU(0.2, inplace=True))
         # output of main module --> State (1024x4x4)
@@ -134,11 +137,11 @@ class Discriminator(torch.nn.Module):
             # The output of D is no longer a probability, we do not apply sigmoid at the output of D.
             nn.Conv2d(in_channels=1024, out_channels=1, kernel_size=self._kernel_size, stride=1, padding=0))
 
-        conv1_out_dim = (self.img_shape+(2*self._padding)-self._kernel_size)/self._stride+1
-        conv2_out_dim = (conv1_out_dim+(2*self._padding)-self._kernel_size)/self._stride+1
+        # conv1_out_dim = (self.img_shape+(2*self._padding)-self._kernel_size)/self._stride+1
+        # conv2_out_dim = (conv1_out_dim+(2*self._padding)-self._kernel_size)/self._stride+1
 
-        self.main_module_out_dim = (conv2_out_dim+(2*self._padding)-self._kernel_size)/self._stride+1
-        self.out_dim = (conv2_out_dim-self._kernel_size)+1
+        # self.main_module_out_dim = (conv2_out_dim+(2*self._padding)-self._kernel_size)/self._stride+1
+        # self.out_dim = (conv2_out_dim-self._kernel_size)+1
 
     def forward(self, x):
         x = self.main_module(x)
