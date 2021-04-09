@@ -44,8 +44,8 @@ class DatasetFactory:
         test_dataset = ImbalancedDataset(test_dataset, imbalance_ratio=1, classes=dataset_config.classes)
 
         # Split dataset into train/valid
-        valid_length = int(validation_split * len(dataset))
-        train_dataset, valid_dataset = random_split(dataset, [len(dataset) - valid_length, valid_length])
+        valid_length = int(dataset_config.validation_split * len(train_dataset))
+        train_dataset, valid_dataset = random_split(train_dataset, [len(train_dataset) - valid_length, valid_length])
 
         train_sampler, valid_sampler, test_sampler = None, None, None
         if dataset_config.oversampling == 'oversampling':
