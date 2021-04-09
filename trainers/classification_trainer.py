@@ -9,7 +9,7 @@ import torch
 from torch.utils.data import DataLoader
 import numpy as np
 
-from utils import logging, Config
+from utils import logging, metrics, Config
 from .trainer import Trainer
 
 logger = logging.getLogger()
@@ -81,6 +81,7 @@ class ClassificationTrainer(Trainer):
         self.model.eval()
         with torch.no_grad():
             with tqdm.tqdm(enumerate(test_dataset, 0), desc=desc, total=len(test_dataset)) as test_pbar:
+                confusion_matrix = None
                 total_loss = 0.0
                 total_accuracy = 0.0
                 for i, data in test_pbar:
@@ -92,6 +93,10 @@ class ClassificationTrainer(Trainer):
 
                     loss = self.loss(outputs, labels)
                     accuracy = (preds == labels).sum().float() / len(labels)
+                    if confusion_matrix == None:
+                        confusion_matrix = metrics.get_confusion_matrix(preds, labels)
+                    else:
+                        confusion_matrix += metrics.get_confusion_matrix(preds, labels)
 
                     test_pbar.set_postfix({'loss': f'{loss.item():.3f}', 'accuracy': f'{accuracy.item():.3f}'})
                     total_loss += loss.item()
@@ -99,6 +104,16 @@ class ClassificationTrainer(Trainer):
 
                 total_loss /= len(test_dataset)
                 total_accuracy /= len(test_dataset)
+                total_csa = metrics.get_CSA(confusion_matrix)
+                total_acsa = torch.mean(total_csa)
                 test_pbar.set_postfix({'loss': f'{total_loss:.3f}', 'accuracy': f'{total_accuracy:.3f}'})
-                wandb.log({'valid_loss': total_loss, 'valid_accuracy': total_accuracy}, commit=True)
+                csa_keys = [f'Class {c} accuracy' for c in np.unique(labels.cpu().numpy())]
+                csa_dict = dict(zip(csa_keys, total_csa.cpu().numpy()))
+                wandb.log(csa_dict, commit=False)
+                wandb.log({
+                    'valid_loss': total_loss,
+                    'valid_accuracy': total_accuracy,
+                    'valid_acsa': total_acsa
+                },
+                          commit=True)
         return total_loss, total_accuracy
