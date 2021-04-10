@@ -1,5 +1,7 @@
 import pytest
 import torch
+import numpy as np
+import sys
 
 from datasets import DatasetFactory
 from utils import Config
@@ -34,6 +36,37 @@ class TestDatasetFactory:
         self.config.oversampling = 'gan'
         train_loader, valid_loader, test_loader = DatasetFactory.create(dataset_config=self.config)
         yield train_loader, valid_loader, test_loader
+
+    def test_dataset_has_proper_number_of_examples(self, dataset_factory):
+        import random
+        import torch
+        import numpy as np
+
+        seed = 42
+        torch.manual_seed(seed)
+        torch.cuda.manual_seed_all(seed)
+        np.random.seed(seed)
+        random.seed(seed)
+        seeded_1_train_loader, seeded_1_valid_loader, seeded_1_test_loader = dataset_factory
+        seeded_2_train_loader, seeded_2_valid_loader, seeded_2_test_loader = dataset_factory
+
+        assert len(seeded_1_train_loader.dataset)==len(seeded_2_train_loader.dataset)
+        assert len(seeded_1_valid_loader.dataset)==len(seeded_2_valid_loader.dataset)
+        assert len(seeded_1_test_loader.dataset)==len(seeded_2_test_loader.dataset)
+
+        s1_dataloader_iter = iter(seeded_1_valid_loader)
+        s2_dataloader_iter = iter(seeded_2_valid_loader)
+        while True:
+            try:
+                _, s1_valid_labels = next(s1_dataloader_iter)
+                _, s2_valid_labels = next(s2_dataloader_iter)
+            except:
+                break
+        _, s1_last_batch_counts = np.unique(s1_valid_labels, return_counts=True)
+        _, s2_last_batch_counts = np.unique(s2_valid_labels, return_counts=True)
+
+        # All diffrent
+        assert len(s1_valid_labels)==len(s2_valid_labels)
 
     def test_dataset_has_proper_shape(self, dataset_factory):
         train_loader, valid_loader, test_loader = dataset_factory
