@@ -30,7 +30,7 @@ class TestDatasetFactory:
         import random
         import torch
         import numpy as np
-        no_seed_train_loader, no_seed_valid_loader, no_seed_test_loader = dataset_factory
+
         seed = 42
         torch.manual_seed(seed)
         torch.cuda.manual_seed_all(seed)
@@ -39,37 +39,23 @@ class TestDatasetFactory:
         seeded_1_train_loader, seeded_1_valid_loader, seeded_1_test_loader = dataset_factory
         seeded_2_train_loader, seeded_2_valid_loader, seeded_2_test_loader = dataset_factory
 
-        assert len(no_seed_train_loader.dataset)==len(seeded_1_train_loader.dataset) # Shouldn't pass 
-        assert len(seeded_1_train_loader.dataset)==len(seeded_2_train_loader.dataset) # Should pass
-
-        assert len(no_seed_valid_loader.dataset)==len(seeded_1_valid_loader.dataset)
+        assert len(seeded_1_train_loader.dataset)==len(seeded_2_train_loader.dataset)
         assert len(seeded_1_valid_loader.dataset)==len(seeded_2_valid_loader.dataset)
-
-        assert len(no_seed_test_loader.dataset)==len(seeded_1_test_loader.dataset)
         assert len(seeded_1_test_loader.dataset)==len(seeded_2_test_loader.dataset)
 
-        no_seed_dataloader_iter = iter(no_seed_valid_loader)
         s1_dataloader_iter = iter(seeded_1_valid_loader)
         s2_dataloader_iter = iter(seeded_2_valid_loader)
         while True:
             try:
-                _, no_seed_valid_labels = next(no_seed_dataloader_iter)
                 _, s1_valid_labels = next(s1_dataloader_iter)
                 _, s2_valid_labels = next(s2_dataloader_iter)
             except:
                 break
-        _, no_seed_last_batch_counts = np.unique(no_seed_valid_labels, return_counts=True)
         _, s1_last_batch_counts = np.unique(s1_valid_labels, return_counts=True)
         _, s2_last_batch_counts = np.unique(s2_valid_labels, return_counts=True)
 
         # All diffrent
-        print(no_seed_last_batch_counts)
-        print(s1_last_batch_counts)
-        print(s2_last_batch_counts)
-        assert False
-        # assert len(first_batch_counts) == len(last_batch_counts)
-        # for i in range(len(first_batch_counts)):
-        #     assert first_batch_counts[i]==last_batch_counts[i]
+        assert len(s1_valid_labels)==len(s2_valid_labels)
 
     def test_dataset_has_proper_shape(self, dataset_factory):
         train_loader, valid_loader, test_loader = dataset_factory
