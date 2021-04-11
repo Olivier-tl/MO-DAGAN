@@ -24,6 +24,7 @@ def main(
     dataset_name: str = 'svhn',
     imbalance_ratio: int = 10,
     oversampling: str = 'none',  # none, oversampling, gan
+    ada: bool = False, # only for gan training
     seed: int = 1,  # No seed if 0
     wandb_logs: bool = False,
 ):
@@ -40,7 +41,7 @@ def main(
 
     # Load configuration
     logger.info(f'Loading config at "{config_path}"...')
-    config = load_config(config_path, dataset_name, imbalance_ratio, oversampling)
+    config = load_config(config_path, dataset_name, imbalance_ratio, oversampling, ada)
 
     # Init logging with WandB
     mode = 'offline' if wandb_logs else 'disabled'

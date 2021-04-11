@@ -10,13 +10,16 @@ from torchvision import utils
 from tqdm import tqdm
 from PIL import Image
 
-from utils import logging, Config
+from utils import logging, Config, AugmentPipe, Collector
 from .trainer import Trainer
 
 logger = logging.getLogger()
 
 IMG_SAMPLES_PATH = 'output/gan_samples'
 SAVE_PER_TIMES = 500
+ADA_UPDATE_INTERVAL = 4
+ADA_TARGET = 0.6
+ADA_IMG_ZERO_ONE = 200
 
 
 class GANTrainer(Trainer):
@@ -25,12 +28,16 @@ class GANTrainer(Trainer):
         self.dataset = dataset
         self.d_optimizer = self._get_optimizer(trainer_config.optimizer, model.D, trainer_config.lr)
         self.g_optimizer = self._get_optimizer(trainer_config.optimizer, model.G, trainer_config.lr)
+        self.ada = trainer_config.ada
         self.generator_iters = trainer_config.epochs
+        if self.ada:
+            self.augment_pipe = AugmentPipe()
 
     def train(self):
 
         one = torch.tensor(1, dtype=torch.float).to(self.device)
         mone = (one * -1).to(self.device)
+        ada_stats = []  # Discriminator logits sign
 
         for g_iter in tqdm(range(self.generator_iters), desc='Generator Iterations'):
 
@@ -45,6 +52,8 @@ class GANTrainer(Trainer):
                 self.model.D.zero_grad()
 
                 images = next(iter(self.dataset))[0].to(self.device)
+                if self.ada:
+                    images = self.augment_pipe.forward(images)
 
                 # Check for batch to have full batch_size
                 if (images.size()[0] != self.dataset.batch_size):
@@ -56,6 +65,8 @@ class GANTrainer(Trainer):
 
                 # Train with real images
                 d_loss_real = self.model.D(images)
+                if self.ada:
+                    ada_stats.append(torch.sign(d_loss_fake.detach().flatten()))
                 d_loss_real = d_loss_real.mean()
                 d_loss_real.backward(mone)
 
@@ -63,7 +74,10 @@ class GANTrainer(Trainer):
                 z = torch.randn(self.dataset.batch_size, 100, 1, 1).to(self.device)
 
                 fake_images = self.model.G(z)
+                if self.ada:
+                    fake_images = self.augment_pipe.forward(fake_images)
                 d_loss_fake = self.model.D(fake_images)
+
                 d_loss_fake = d_loss_fake.mean()
                 d_loss_fake.backward(one)
 
@@ -97,6 +111,12 @@ class GANTrainer(Trainer):
             g_loss.backward(mone)
             g_cost = -g_loss
             self.g_optimizer.step()
+
+            # Update augment strengh(t)
+            if self.ada and (g_iter % ADA_UPDATE_INTERVAL == 0) and len(ada_stats) != 0:
+                r_t = torch.mean(torch.stack(ada_stats))
+                adjust = np.sign(r_t - ADA_TARGET) * (batch_size * ADA_UPDATE_INTERVAL) / ADA_IMG_ZERO_ONE
+                augment_pipe.p.copy_((self.augment_pipe.p + adjust).max(0))
 
             # Log to WandB
             wandb.log({'g_loss': g_loss, 'g_iter': g_iter})
