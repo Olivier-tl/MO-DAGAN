@@ -7,11 +7,12 @@ from utils import Config
 
 
 class SyntheticDataset(torch.utils.data.IterableDataset):
-    def __init__(self, dataset_config: Config.Dataset, buffer_size: int = 64):
+    def __init__(self, dataset_config: Config.Dataset, buffer_size: int = 64, ada: bool = False):
         super(SyntheticDataset).__init__()
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.label = dataset_config.classes[-1]
-        dataset_config.gan_model.saved_model += f'_{dataset_config.name}_classes_{self.label}'
+        ada_suffix = '_ada' if config.trainer.ada else ''
+        dataset_config.gan_model.saved_model += f'_{dataset_config.name}_classes_{self.label}{ada_suffix}'
         dataset_config.gan_model.saved_model = os.path.join(dataset_config.gan_model.saved_model, 'final_model')
         self.model = ModelFactory.create(dataset_config.gan_model).to(self.device)
 

@@ -19,7 +19,7 @@ IMG_RES = 32
 class DatasetFactory:
     """Constructs the appropriate dataset. Returns train, valid & test splits.
     """
-    def create(dataset_config: Config.Dataset) -> typing.Tuple[DataLoader, DataLoader, DataLoader]:
+    def create(dataset_config: Config.Dataset, ada: bool = False) -> typing.Tuple[DataLoader, DataLoader, DataLoader]:
         save_path = os.path.join(CACHE_FOLDER, dataset_config.name)
 
         # FIXME : Normalize using the actual mean and std of the dataset (issue #15)
@@ -57,7 +57,7 @@ class DatasetFactory:
             valid_sampler = get_balanced_sampler(valid_dataset.dataset.labels[valid_dataset.indices])
             test_sampler = get_balanced_sampler(test_dataset.labels)
         elif dataset_config.oversampling == 'gan':
-            synthetic_dataset = SyntheticDataset(dataset_config)
+            synthetic_dataset = SyntheticDataset(dataset_config, ada)
             train_dataset = BalancedDataset(train_dataset, synthetic_dataset)
             valid_dataset = BalancedDataset(valid_dataset, synthetic_dataset)
         elif dataset_config.oversampling == 'none':

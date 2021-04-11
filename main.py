@@ -22,9 +22,9 @@ PROJECT_NAME = 'MO-DAGAN'
 def main(
     config_path: str = 'configs/classification.yaml',
     dataset_name: str = 'svhn',
-    imbalance_ratio: int = 10,
+    imbalance_ratio: int = 1,
     oversampling: str = 'none',  # none, oversampling, gan
-    ada: bool = False, # only for gan training
+    ada: bool = False,  # only for gan training
     seed: int = 1,  # No seed if 0
     wandb_logs: bool = False,
 ):
@@ -58,7 +58,7 @@ def main(
 
     # Load dataset
     logger.info('Loading dataset...')
-    train_dataset, valid_dataset, _ = DatasetFactory.create(dataset_config=config.dataset)
+    train_dataset, valid_dataset, _ = DatasetFactory.create(dataset_config=config.dataset, ada=ada)
 
     # Instatiate trainer
     logger.info('Loading trainer...')
@@ -66,7 +66,8 @@ def main(
                                     train_dataset=train_dataset,
                                     valid_dataset=valid_dataset,
                                     model=model)
-    trainer.set_dataset_name(dataset_name=f'{dataset_name}_classes_{"-".join(map(str, config.dataset.classes))}')
+    ada_suffix = '_ada' if config.trainer.ada else ''
+    trainer.set_dataset_name(f'{dataset_name}_classes_{"-".join(map(str, config.dataset.classes))}{ada_suffix}')
 
     # Train
     logger.info('Training...')
@@ -76,7 +77,7 @@ def main(
     # Cleanup
     wandb.finish()
 
-    logger.info('all done :)')
+    logger.info('done :)')
 
 
 if __name__ == '__main__':
