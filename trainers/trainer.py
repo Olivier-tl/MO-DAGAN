@@ -37,11 +37,14 @@ class Trainer():
             logger.warning('Loss "{loss}" not recognized. Falling back to cross_entropy loss by default')
             return nn.crossEntropyLoss()
 
+    def set_dataset_name(dataset_name: string):
+        self.dataset_name = dataset_name        
+
     def save_model(self, desc: str = ''):
-        path = os.path.join(SAVED_MODELS_PATH, self.model.__class__.__name__)
+        path = os.path.join(SAVED_MODELS_PATH, f'{self.model.__class__.__name__}_{self.dataset_name}')
         if not os.path.exists(path):
             os.makedirs(path)
-        self.model.save_model(os.path.join(path, f'{self.model.__class__.__name__}_{desc}'))
+        self.model.save_model(os.path.join(path, f'{self.model.__class__.__name__}_{desc}_{self.dataset_name}'))
 
     def load_model(self, path: str):
         self.model.load_model(path)

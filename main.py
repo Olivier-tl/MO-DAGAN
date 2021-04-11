@@ -68,6 +68,7 @@ def main(
 
     # Train
     logger.info('Training...')
+    trainer.set_dataset_name(dataset_name)
     trainer.train()
 
     # Cleanup
