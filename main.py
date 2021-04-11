@@ -65,10 +65,11 @@ def main(
                                     train_dataset=train_dataset,
                                     valid_dataset=valid_dataset,
                                     model=model)
+    trainer.set_dataset_name(dataset_name=f'{dataset_name}_classes_{"-".join(map(str, config.dataset.classes))}')
 
     # Train
     logger.info('Training...')
-    trainer.set_dataset_name(dataset_name)
+
     trainer.train()
 
     # Cleanup

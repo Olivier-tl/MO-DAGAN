@@ -7,13 +7,13 @@ trainer:
   lr: 0.001
   optimizer: 'adam'
   loss: 'cross_entropy'
-  epochs: 10
+  epochs: 1 #10
 
 dataset:
   validation_split: 0.3
-  classes: [0, 1]
+  classes: [0, 1] # Last is minority
   batch_size: 100
   oversampling: 'gan' # none, oversampling or gan
   gan_model:
     name: 'wgan' 
-    saved_model: 'output/saved_models/WGAN/WGAN_iter_5000' # path to saved model if oversampling is gan
+    saved_model: 'output/saved_models/WGAN' # path to saved model if oversampling is gan

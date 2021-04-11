@@ -57,7 +57,7 @@ class DatasetFactory:
             valid_sampler = get_balanced_sampler(valid_dataset.dataset.labels[valid_dataset.indices])
             test_sampler = get_balanced_sampler(test_dataset.labels)
         elif dataset_config.oversampling == 'gan':
-            synthetic_dataset = SyntheticDataset(dataset_config.gan_model)
+            synthetic_dataset = SyntheticDataset(dataset_config)
             train_dataset = BalancedDataset(train_dataset, synthetic_dataset)
             valid_dataset = BalancedDataset(valid_dataset, synthetic_dataset)
         elif dataset_config.oversampling == 'none':
