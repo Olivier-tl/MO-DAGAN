@@ -25,11 +25,14 @@ class ImbalancedDataset(torch.utils.data.Dataset):
             raise ValueError("Can't create an imbalance if only one classe is selected.")
 
         class_idx = defaultdict(list)
+        self.labels = []
         for idx in list(range(len(dataset))):
             label = dataset[idx][1]
+            self.labels.append(label)
             for i in range(len(classes)):
                 if label == classes[i]:
                     class_idx[label].append(idx)
+        self.labels = torch.tensor(self.labels)
 
         trunc_idx = int(len(class_idx[classes[0]]) // imbalance_ratio)
         random.shuffle(class_idx[classes[-1]])

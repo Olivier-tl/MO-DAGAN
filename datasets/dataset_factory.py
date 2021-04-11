@@ -1,10 +1,11 @@
 import os
 import typing
 
+import numpy as np
 import torch
 import torchvision
 import torchvision.transforms as transforms
-from torch.utils.data import Dataset, DataLoader, random_split
+from torch.utils.data import Dataset, DataLoader, random_split, WeightedRandomSampler
 
 from utils import Config
 from .imbalanced_dataset import ImbalancedDataset
@@ -46,9 +47,11 @@ class DatasetFactory:
         valid_length = int(dataset_config.validation_split * len(train_dataset))
         train_dataset, valid_dataset = random_split(train_dataset, [len(train_dataset) - valid_length, valid_length])
 
+        train_sampler, valid_sampler, test_sampler = None, None, None
         if dataset_config.oversampling == 'oversampling':
-            # TODO: Implement oversampling of the minority class
-            raise NotImplementedError('Oversampling of the minority class not implemented yet.')
+            train_sampler = get_balanced_sampler(train_dataset.dataset.labels[train_dataset.indices])
+            valid_sampler = get_balanced_sampler(valid_dataset.dataset.labels[valid_dataset.indices])
+            test_sampler = get_balanced_sampler(test_dataset.labels)
         elif dataset_config.oversampling == 'gan':
             synthetic_dataset = SyntheticDataset(dataset_config.gan_model)
             train_dataset = BalancedDataset(train_dataset, synthetic_dataset)
@@ -58,8 +61,19 @@ class DatasetFactory:
         else:
             raise ValueError(f'Oversampling option "{dataset_config.oversampling}" not recognized.')
 
-        train_loader = DataLoader(train_dataset, batch_size=dataset_config.batch_size)
-        valid_loader = DataLoader(valid_dataset, batch_size=dataset_config.batch_size)
-        test_loader = DataLoader(test_dataset, batch_size=dataset_config.batch_size)
+        train_loader = DataLoader(train_dataset, sampler=train_sampler, batch_size=dataset_config.batch_size)
+        valid_loader = DataLoader(valid_dataset, sampler=valid_sampler, batch_size=dataset_config.batch_size)
+        test_loader = DataLoader(test_dataset, sampler=test_sampler, batch_size=dataset_config.batch_size)
 
         return train_loader, valid_loader, test_loader
+
+
+def get_balanced_sampler(labels):
+    # Create balanced sampler
+    class_sample_count = np.array([len(np.where(labels == l)[0]) for l in np.unique(labels)])
+    weight = 1. / class_sample_count
+    samples_weight = np.array([weight[l] for l in labels])
+
+    samples_weight = torch.from_numpy(samples_weight)
+    samples_weigth = samples_weight.double()
+    return WeightedRandomSampler(samples_weight, len(samples_weight))
