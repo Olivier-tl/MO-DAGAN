@@ -6,7 +6,7 @@ trainer:
   task: 'generation'
   lr: 0.001
   optimizer: 'adam'
-  epochs: 1 #10000 # here, epochs refers to the number of generator iterations
+  epochs: 10000 # here, epochs refers to the number of generator iterations
 
 dataset:
   validation_split: 0

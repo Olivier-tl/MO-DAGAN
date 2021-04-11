@@ -62,8 +62,6 @@ class ClassificationTrainer(Trainer):
                     total_loss += loss.item()
                     total_accuracy += accuracy.item()
 
-                    # break  # FIXME: REMOVE
-
                 total_loss /= len(self.train_dataset)
                 total_accuracy /= len(self.train_dataset)
 
