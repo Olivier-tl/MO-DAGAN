@@ -13,6 +13,7 @@ from .synthetic_dataset import SyntheticDataset
 from .balanced_dataset import BalancedDataset
 
 CACHE_FOLDER = 'output/datasets'
+IMG_RES = 32
 
 
 class DatasetFactory:
@@ -22,7 +23,10 @@ class DatasetFactory:
         save_path = os.path.join(CACHE_FOLDER, dataset_config.name)
 
         # FIXME : Normalize using the actual mean and std of the dataset (issue #15)
-        transform = transforms.Compose([transforms.ToTensor(), transforms.Normalize((0.5, ), (0.5, ))])
+        transform = transforms.Compose(
+            [transforms.Resize(IMG_RES),
+             transforms.ToTensor(),
+             transforms.Normalize((0.5, ), (0.5, ))])
 
         if dataset_config.name == 'mnist':
             dataset = torchvision.datasets.MNIST(save_path, train=True, download=True, transform=transform)
