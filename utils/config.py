@@ -4,12 +4,11 @@ from dataclasses import dataclass
 
 from marshmallow_dataclass import class_schema
 
-DATASET_INPUT_SIZES = {
-    # dataset_name: (channels, img_size (assumed square))
-    'mnist': (1, 28),
-    'fashion-mnist': (1, 28),
-    'cifar10': (3, 32),
-    'svhn': (3, 32),
+DATASET_NB_CHANNELS = {
+    'mnist': 1,
+    'fashion-mnist': 1,
+    'cifar10': 3,
+    'svhn': 3,
 }
 
 
@@ -21,10 +20,8 @@ def load_config(path: str, dataset_name: str, imbalance_ratio: int, oversampling
     config.dataset.name = dataset_name
     config.dataset.imbalance_ratio = imbalance_ratio
     config.dataset.oversampling = oversampling
-    config.model.input_channels = DATASET_INPUT_SIZES[dataset_name][0]
-    config.model.output_size = DATASET_INPUT_SIZES[dataset_name][1]
-    config.dataset.gan_model.input_channels = DATASET_INPUT_SIZES[dataset_name][0]
-    config.dataset.gan_model.output_size = DATASET_INPUT_SIZES[dataset_name][1]
+    config.model.input_channels = DATASET_NB_CHANNELS[dataset_name]
+    config.dataset.gan_model.input_channels = DATASET_NB_CHANNELS[dataset_name]
     return config
 
 
@@ -35,7 +32,6 @@ class Config:
         name: str = None
         saved_model: str = None
         input_channels: int = None
-        output_size: int = None  # assumed square (eg: 32 -> 32x32)
 
     @dataclass
     class Trainer:
@@ -56,7 +52,6 @@ class Config:
             name: str = None
             saved_model: str = None
             input_channels: int = None
-            output_size: int = None  # assumed square (eg: 32 -> 32x32)
 
         name: str = None
         validation_split: float = None

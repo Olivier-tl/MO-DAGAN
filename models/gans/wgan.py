@@ -10,11 +10,10 @@ logger = logging.getLogger()
 
 
 class WGAN(object):
-    def __init__(self, channels: int, img_shape: int):
-        self.img_shape = img_shape
+    def __init__(self, channels: int):
         self.C = channels
         self.G = Generator(self.C)
-        self.D = Discriminator(self.C, img_shape)
+        self.D = Discriminator(self.C)
 
         # WGAN values from paper
         self.learning_rate = 1e-4
@@ -36,9 +35,9 @@ class WGAN(object):
         generated_images = []
         for sample in samples:
             if self.C == 3:
-                generated_images.append(sample.reshape(self.C, self.img_shape, self.img_shape))
+                generated_images.append(sample.reshape(self.C, 32, 32))
             else:
-                generated_images.append(sample.reshape(self.img_shape, self.img_shape))
+                generated_images.append(sample.reshape(32, 32))
         return generated_images
 
     def save_model(self, path: str):
@@ -91,12 +90,11 @@ class Generator(torch.nn.Module):
 
 
 class Discriminator(torch.nn.Module):
-    def __init__(self, channels, img_shape):
+    def __init__(self, channels):
         super().__init__()
         # Filters [256, 512, 1024]
         # Input_dim = channels (Cx64x64)
         # Output_dim = 1
-        self.img_shape = img_shape
 
         self._kernel_size = 4
         self._stride = 2
@@ -136,12 +134,6 @@ class Discriminator(torch.nn.Module):
         self.output = nn.Sequential(
             # The output of D is no longer a probability, we do not apply sigmoid at the output of D.
             nn.Conv2d(in_channels=1024, out_channels=1, kernel_size=self._kernel_size, stride=1, padding=0))
-
-        # conv1_out_dim = (self.img_shape+(2*self._padding)-self._kernel_size)/self._stride+1
-        # conv2_out_dim = (conv1_out_dim+(2*self._padding)-self._kernel_size)/self._stride+1
-
-        # self.main_module_out_dim = (conv2_out_dim+(2*self._padding)-self._kernel_size)/self._stride+1
-        # self.out_dim = (conv2_out_dim-self._kernel_size)+1
 
     def forward(self, x):
         x = self.main_module(x)

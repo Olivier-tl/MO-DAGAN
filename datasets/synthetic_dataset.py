@@ -1,18 +1,19 @@
+import os
+
 import torch
 
 from models import ModelFactory
 from utils import Config
 
-# FIXME: Move to dataset yaml configuration file
-LABEL = 1
-
 
 class SyntheticDataset(torch.utils.data.IterableDataset):
-    def __init__(self, model_config: Config.Model, buffer_size: int = 64):
+    def __init__(self, dataset_config: Config.Dataset, buffer_size: int = 64):
         super(SyntheticDataset).__init__()
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-        self.model = ModelFactory.create(model_config).to(self.device)
-        self.label = LABEL
+        self.label = dataset_config.classes[-1]
+        dataset_config.gan_model.saved_model += f'_{dataset_config.name}_classes_{self.label}'
+        dataset_config.gan_model.saved_model = os.path.join(dataset_config.gan_model.saved_model, 'final_model')
+        self.model = ModelFactory.create(dataset_config.gan_model).to(self.device)
 
         self.buffer_size = buffer_size
         self.pointer = 0
