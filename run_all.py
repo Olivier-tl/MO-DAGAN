@@ -6,7 +6,7 @@ import fire
 datasets = ['mnist', 'fashion-mnist', 'cifar10', 'svhn']
 oversampling_options = ['none', 'oversampling', 'gan']
 imbalance_ratios = [10, 50, 100]
-ada_options = [True]
+ada_options = [True, False]
 
 
 def run_classification():
