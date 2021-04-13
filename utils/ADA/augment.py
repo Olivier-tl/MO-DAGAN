@@ -94,7 +94,6 @@ def matrix(*rows, device=None):
     # if len(ref) == 0:
     #     return misc.constant(np.asarray(rows), device=device)
     assert device is None or device == ref[0].device
-    elems = [x]
     # elems = [
     #     x if isinstance(x, torch.Tensor) else misc.constant(x, shape=ref[0].shape, device=ref[0].device) for x in elems
     # ]
