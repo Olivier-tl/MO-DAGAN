@@ -12,10 +12,11 @@ DATASET_NB_CHANNELS = {
 }
 
 
-def load_config(path: str, dataset_name: str, imbalance_ratio: int, oversampling: str):
+def load_config(path: str, dataset_name: str, imbalance_ratio: int, oversampling: str, ada: bool):
     config_schema = class_schema(Config)
     config_dict = yaml.load(open(path), Loader=yaml.Loader)
     config = config_schema().load(config_dict)
+    config.trainer.ada = ada
     config.dataset.name = dataset_name
     config.dataset.imbalance_ratio = imbalance_ratio
     config.dataset.oversampling = oversampling
@@ -39,6 +40,7 @@ class Config:
         optimizer: str = None
         loss: str = None
         epochs: int = None
+        ada: bool = None
         betas: typing.List[float] = None
 
     @dataclass
