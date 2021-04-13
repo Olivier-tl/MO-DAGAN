@@ -6,6 +6,8 @@
 # distribution of this software and related documentation without an express
 # license agreement from NVIDIA CORPORATION is strictly prohibited.
 
+# * ORIGINAL CODE FROM NVIDIA WITH SOME COMMENTED PARTS *
+
 import numpy as np
 import scipy.signal
 import torch
@@ -18,68 +20,68 @@ import torch
 #----------------------------------------------------------------------------
 # Coefficients of various wavelet decomposition low-pass filters.
 
-wavelets = {
-    'haar': [0.7071067811865476, 0.7071067811865476],
-    'db1': [0.7071067811865476, 0.7071067811865476],
-    'db2': [-0.12940952255092145, 0.22414386804185735, 0.836516303737469, 0.48296291314469025],
-    'db3': [
-        0.035226291882100656, -0.08544127388224149, -0.13501102001039084, 0.4598775021193313, 0.8068915093133388,
-        0.3326705529509569
-    ],
-    'db4': [
-        -0.010597401784997278, 0.032883011666982945, 0.030841381835986965, -0.18703481171888114, -0.02798376941698385,
-        0.6308807679295904, 0.7148465705525415, 0.23037781330885523
-    ],
-    'db5': [
-        0.003335725285001549, -0.012580751999015526, -0.006241490213011705, 0.07757149384006515, -0.03224486958502952,
-        -0.24229488706619015, 0.13842814590110342, 0.7243085284385744, 0.6038292697974729, 0.160102397974125
-    ],
-    'db6': [
-        -0.00107730108499558, 0.004777257511010651, 0.0005538422009938016, -0.031582039318031156, 0.02752286553001629,
-        0.09750160558707936, -0.12976686756709563, -0.22626469396516913, 0.3152503517092432, 0.7511339080215775,
-        0.4946238903983854, 0.11154074335008017
-    ],
-    'db7': [
-        0.0003537138000010399, -0.0018016407039998328, 0.00042957797300470274, 0.012550998556013784,
-        -0.01657454163101562, -0.03802993693503463, 0.0806126091510659, 0.07130921926705004, -0.22403618499416572,
-        -0.14390600392910627, 0.4697822874053586, 0.7291320908465551, 0.39653931948230575, 0.07785205408506236
-    ],
-    'db8': [
-        -0.00011747678400228192, 0.0006754494059985568, -0.0003917403729959771, -0.00487035299301066,
-        0.008746094047015655, 0.013981027917015516, -0.04408825393106472, -0.01736930100202211, 0.128747426620186,
-        0.00047248457399797254, -0.2840155429624281, -0.015829105256023893, 0.5853546836548691, 0.6756307362980128,
-        0.3128715909144659, 0.05441584224308161
-    ],
-    'sym2': [-0.12940952255092145, 0.22414386804185735, 0.836516303737469, 0.48296291314469025],
-    'sym3': [
-        0.035226291882100656, -0.08544127388224149, -0.13501102001039084, 0.4598775021193313, 0.8068915093133388,
-        0.3326705529509569
-    ],
-    'sym4': [
-        -0.07576571478927333, -0.02963552764599851, 0.49761866763201545, 0.8037387518059161, 0.29785779560527736,
-        -0.09921954357684722, -0.012603967262037833, 0.0322231006040427
-    ],
-    'sym5': [
-        0.027333068345077982, 0.029519490925774643, -0.039134249302383094, 0.1993975339773936, 0.7234076904024206,
-        0.6339789634582119, 0.01660210576452232, -0.17532808990845047, -0.021101834024758855, 0.019538882735286728
-    ],
-    'sym6': [
-        0.015404109327027373, 0.0034907120842174702, -0.11799011114819057, -0.048311742585633, 0.4910559419267466,
-        0.787641141030194, 0.3379294217276218, -0.07263752278646252, -0.021060292512300564, 0.04472490177066578,
-        0.0017677118642428036, -0.007800708325034148
-    ],
-    'sym7': [
-        0.002681814568257878, -0.0010473848886829163, -0.01263630340325193, 0.03051551316596357, 0.0678926935013727,
-        -0.049552834937127255, 0.017441255086855827, 0.5361019170917628, 0.767764317003164, 0.2886296317515146,
-        -0.14004724044296152, -0.10780823770381774, 0.004010244871533663, 0.010268176708511255
-    ],
-    'sym8': [
-        -0.0033824159510061256, -0.0005421323317911481, 0.03169508781149298, 0.007607487324917605, -0.1432942383508097,
-        -0.061273359067658524, 0.4813596512583722, 0.7771857517005235, 0.3644418948353314, -0.05194583810770904,
-        -0.027219029917056003, 0.049137179673607506, 0.003808752013890615, -0.01495225833704823, -0.0003029205147213668,
-        0.0018899503327594609
-    ],
-}
+# wavelets = {
+#     'haar': [0.7071067811865476, 0.7071067811865476],
+#     'db1': [0.7071067811865476, 0.7071067811865476],
+#     'db2': [-0.12940952255092145, 0.22414386804185735, 0.836516303737469, 0.48296291314469025],
+#     'db3': [
+#         0.035226291882100656, -0.08544127388224149, -0.13501102001039084, 0.4598775021193313, 0.8068915093133388,
+#         0.3326705529509569
+#     ],
+#     'db4': [
+#         -0.010597401784997278, 0.032883011666982945, 0.030841381835986965, -0.18703481171888114, -0.02798376941698385,
+#         0.6308807679295904, 0.7148465705525415, 0.23037781330885523
+#     ],
+#     'db5': [
+#         0.003335725285001549, -0.012580751999015526, -0.006241490213011705, 0.07757149384006515, -0.03224486958502952,
+#         -0.24229488706619015, 0.13842814590110342, 0.7243085284385744, 0.6038292697974729, 0.160102397974125
+#     ],
+#     'db6': [
+#         -0.00107730108499558, 0.004777257511010651, 0.0005538422009938016, -0.031582039318031156, 0.02752286553001629,
+#         0.09750160558707936, -0.12976686756709563, -0.22626469396516913, 0.3152503517092432, 0.7511339080215775,
+#         0.4946238903983854, 0.11154074335008017
+#     ],
+#     'db7': [
+#         0.0003537138000010399, -0.0018016407039998328, 0.00042957797300470274, 0.012550998556013784,
+#         -0.01657454163101562, -0.03802993693503463, 0.0806126091510659, 0.07130921926705004, -0.22403618499416572,
+#         -0.14390600392910627, 0.4697822874053586, 0.7291320908465551, 0.39653931948230575, 0.07785205408506236
+#     ],
+#     'db8': [
+#         -0.00011747678400228192, 0.0006754494059985568, -0.0003917403729959771, -0.00487035299301066,
+#         0.008746094047015655, 0.013981027917015516, -0.04408825393106472, -0.01736930100202211, 0.128747426620186,
+#         0.00047248457399797254, -0.2840155429624281, -0.015829105256023893, 0.5853546836548691, 0.6756307362980128,
+#         0.3128715909144659, 0.05441584224308161
+#     ],
+#     'sym2': [-0.12940952255092145, 0.22414386804185735, 0.836516303737469, 0.48296291314469025],
+#     'sym3': [
+#         0.035226291882100656, -0.08544127388224149, -0.13501102001039084, 0.4598775021193313, 0.8068915093133388,
+#         0.3326705529509569
+#     ],
+#     'sym4': [
+#         -0.07576571478927333, -0.02963552764599851, 0.49761866763201545, 0.8037387518059161, 0.29785779560527736,
+#         -0.09921954357684722, -0.012603967262037833, 0.0322231006040427
+#     ],
+#     'sym5': [
+#         0.027333068345077982, 0.029519490925774643, -0.039134249302383094, 0.1993975339773936, 0.7234076904024206,
+#         0.6339789634582119, 0.01660210576452232, -0.17532808990845047, -0.021101834024758855, 0.019538882735286728
+#     ],
+#     'sym6': [
+#         0.015404109327027373, 0.0034907120842174702, -0.11799011114819057, -0.048311742585633, 0.4910559419267466,
+#         0.787641141030194, 0.3379294217276218, -0.07263752278646252, -0.021060292512300564, 0.04472490177066578,
+#         0.0017677118642428036, -0.007800708325034148
+#     ],
+#     'sym7': [
+#         0.002681814568257878, -0.0010473848886829163, -0.01263630340325193, 0.03051551316596357, 0.0678926935013727,
+#         -0.049552834937127255, 0.017441255086855827, 0.5361019170917628, 0.767764317003164, 0.2886296317515146,
+#         -0.14004724044296152, -0.10780823770381774, 0.004010244871533663, 0.010268176708511255
+#     ],
+#     'sym8': [
+#         -0.0033824159510061256, -0.0005421323317911481, 0.03169508781149298, 0.007607487324917605, -0.1432942383508097,
+#         -0.061273359067658524, 0.4813596512583722, 0.7771857517005235, 0.3644418948353314, -0.05194583810770904,
+#         -0.027219029917056003, 0.049137179673607506, 0.003808752013890615, -0.01495225833704823, -0.0003029205147213668,
+#         0.0018899503327594609
+#     ],
+# }
 
 #----------------------------------------------------------------------------
 # Helpers for constructing transformation matrices.
@@ -89,12 +91,13 @@ def matrix(*rows, device=None):
     assert all(len(row) == len(rows[0]) for row in rows)
     elems = [x for row in rows for x in row]
     ref = [x for x in elems if isinstance(x, torch.Tensor)]
-    if len(ref) == 0:
-        return misc.constant(np.asarray(rows), device=device)
+    # if len(ref) == 0:
+    #     return misc.constant(np.asarray(rows), device=device)
     assert device is None or device == ref[0].device
-    elems = [
-        x if isinstance(x, torch.Tensor) else misc.constant(x, shape=ref[0].shape, device=ref[0].device) for x in elems
-    ]
+    elems = [x]
+    # elems = [
+    #     x if isinstance(x, torch.Tensor) else misc.constant(x, shape=ref[0].shape, device=ref[0].device) for x in elems
+    # ]
     return torch.stack(elems, dim=-1).reshape(ref[0].shape + (len(rows), -1))
 
 
@@ -329,39 +332,39 @@ class AugmentPipe(torch.nn.Module):
         # ----------------------------------
 
         # Execute if the transform is not identity.
-        if G_inv is not I_3:
+        # if G_inv is not I_3:
 
-            # Calculate padding.
-            cx = (width - 1) / 2
-            cy = (height - 1) / 2
-            cp = matrix([-cx, -cy, 1], [cx, -cy, 1], [cx, cy, 1], [-cx, cy, 1], device=device)  # [idx, xyz]
-            cp = G_inv @ cp.t()  # [batch, xyz, idx]
-            Hz_pad = self.Hz_geom.shape[0] // 4
-            margin = cp[:, :2, :].permute(1, 0, 2).flatten(1)  # [xy, batch * idx]
-            margin = torch.cat([-margin, margin]).max(dim=1).values  # [x0, y0, x1, y1]
-            margin = margin + misc.constant([Hz_pad * 2 - cx, Hz_pad * 2 - cy] * 2, device=device)
-            margin = margin.max(misc.constant([0, 0] * 2, device=device))
-            margin = margin.min(misc.constant([width - 1, height - 1] * 2, device=device))
-            mx0, my0, mx1, my1 = margin.ceil().to(torch.int32)
+        #     # Calculate padding.
+        #     cx = (width - 1) / 2
+        #     cy = (height - 1) / 2
+        #     cp = matrix([-cx, -cy, 1], [cx, -cy, 1], [cx, cy, 1], [-cx, cy, 1], device=device)  # [idx, xyz]
+        #     cp = G_inv @ cp.t()  # [batch, xyz, idx]
+        #     Hz_pad = self.Hz_geom.shape[0] // 4
+        #     margin = cp[:, :2, :].permute(1, 0, 2).flatten(1)  # [xy, batch * idx]
+        #     margin = torch.cat([-margin, margin]).max(dim=1).values  # [x0, y0, x1, y1]
+        #     margin = margin + misc.constant([Hz_pad * 2 - cx, Hz_pad * 2 - cy] * 2, device=device)
+        #     margin = margin.max(misc.constant([0, 0] * 2, device=device))
+        #     margin = margin.min(misc.constant([width - 1, height - 1] * 2, device=device))
+        #     mx0, my0, mx1, my1 = margin.ceil().to(torch.int32)
 
-            # Pad image and adjust origin.
-            images = torch.nn.functional.pad(input=images, pad=[mx0, mx1, my0, my1], mode='reflect')
-            G_inv = translate2d((mx0 - mx1) / 2, (my0 - my1) / 2) @ G_inv
+        #     # Pad image and adjust origin.
+        #     images = torch.nn.functional.pad(input=images, pad=[mx0, mx1, my0, my1], mode='reflect')
+        #     G_inv = translate2d((mx0 - mx1) / 2, (my0 - my1) / 2) @ G_inv
 
-            # Upsample.
-            images = upfirdn2d.upsample2d(x=images, f=self.Hz_geom, up=2)
-            G_inv = scale2d(2, 2, device=device) @ G_inv @ scale2d_inv(2, 2, device=device)
-            G_inv = translate2d(-0.5, -0.5, device=device) @ G_inv @ translate2d_inv(-0.5, -0.5, device=device)
+        #     # Upsample.
+        #     images = upfirdn2d.upsample2d(x=images, f=self.Hz_geom, up=2)
+        #     G_inv = scale2d(2, 2, device=device) @ G_inv @ scale2d_inv(2, 2, device=device)
+        #     G_inv = translate2d(-0.5, -0.5, device=device) @ G_inv @ translate2d_inv(-0.5, -0.5, device=device)
 
-            # Execute transformation.
-            shape = [batch_size, num_channels, (height + Hz_pad * 2) * 2, (width + Hz_pad * 2) * 2]
-            G_inv = scale2d(2 / images.shape[3], 2 / images.shape[2], device=device) @ G_inv @ scale2d_inv(
-                2 / shape[3], 2 / shape[2], device=device)
-            grid = torch.nn.functional.affine_grid(theta=G_inv[:, :2, :], size=shape, align_corners=False)
-            images = grid_sample_gradfix.grid_sample(images, grid)
+        #     # Execute transformation.
+        #     shape = [batch_size, num_channels, (height + Hz_pad * 2) * 2, (width + Hz_pad * 2) * 2]
+        #     G_inv = scale2d(2 / images.shape[3], 2 / images.shape[2], device=device) @ G_inv @ scale2d_inv(
+        #         2 / shape[3], 2 / shape[2], device=device)
+        #     grid = torch.nn.functional.affine_grid(theta=G_inv[:, :2, :], size=shape, align_corners=False)
+        #     images = grid_sample_gradfix.grid_sample(images, grid)
 
-            # Downsample and crop.
-            images = upfirdn2d.downsample2d(x=images, f=self.Hz_geom, down=2, padding=-Hz_pad * 2, flip_filter=True)
+        #     # Downsample and crop.
+        #     images = upfirdn2d.downsample2d(x=images, f=self.Hz_geom, down=2, padding=-Hz_pad * 2, flip_filter=True)
 
         # --------------------------------------------
         # Select parameters for color transformations.
@@ -419,56 +422,56 @@ class AugmentPipe(torch.nn.Module):
         # Execute color transformations.
         # ------------------------------
 
-        # Execute if the transform is not identity.
-        if C is not I_4:
-            images = images.reshape([batch_size, num_channels, height * width])
-            if num_channels == 3:
-                images = C[:, :3, :3] @ images + C[:, :3, 3:]
-            elif num_channels == 1:
-                C = C[:, :3, :].mean(dim=1, keepdims=True)
-                images = images * C[:, :, :3].sum(dim=2, keepdims=True) + C[:, :, 3:]
-            else:
-                raise ValueError('Image must be RGB (3 channels) or L (1 channel)')
-            images = images.reshape([batch_size, num_channels, height, width])
+        # # Execute if the transform is not identity.
+        # if C is not I_4:
+        #     images = images.reshape([batch_size, num_channels, height * width])
+        #     if num_channels == 3:
+        #         images = C[:, :3, :3] @ images + C[:, :3, 3:]
+        #     elif num_channels == 1:
+        #         C = C[:, :3, :].mean(dim=1, keepdims=True)
+        #         images = images * C[:, :, :3].sum(dim=2, keepdims=True) + C[:, :, 3:]
+        #     else:
+        #         raise ValueError('Image must be RGB (3 channels) or L (1 channel)')
+        #     images = images.reshape([batch_size, num_channels, height, width])
 
-        # ----------------------
-        # Image-space filtering.
-        # ----------------------
+        #     # ----------------------
+        #     # Image-space filtering.
+        #     # ----------------------
 
-        if self.imgfilter > 0:
-            num_bands = self.Hz_fbank.shape[0]
-            assert len(self.imgfilter_bands) == num_bands
-            expected_power = misc.constant(np.array([10, 1, 1, 1]) / 13,
-                                           device=device)  # Expected power spectrum (1/f).
+        #     if self.imgfilter > 0:
+        #         num_bands = self.Hz_fbank.shape[0]
+        #         assert len(self.imgfilter_bands) == num_bands
+        #         expected_power = misc.constant(np.array([10, 1, 1, 1]) / 13,
+        #                                        device=device)  # Expected power spectrum (1/f).
 
-            # Apply amplification for each band with probability (imgfilter * strength * band_strength).
-            g = torch.ones([batch_size, num_bands], device=device)  # Global gain vector (identity).
-            for i, band_strength in enumerate(self.imgfilter_bands):
-                t_i = torch.exp2(torch.randn([batch_size], device=device) * self.imgfilter_std)
-                t_i = torch.where(
-                    torch.rand([batch_size], device=device) < self.imgfilter * self.p * band_strength, t_i,
-                    torch.ones_like(t_i))
-                if debug_percentile is not None:
-                    t_i = torch.full_like(t_i,
-                                          torch.exp2(torch.erfinv(debug_percentile * 2 - 1) *
-                                                     self.imgfilter_std)) if band_strength > 0 else torch.ones_like(t_i)
-                t = torch.ones([batch_size, num_bands], device=device)  # Temporary gain vector.
-                t[:, i] = t_i  # Replace i'th element.
-                t = t / (expected_power * t.square()).sum(dim=-1, keepdims=True).sqrt()  # Normalize power.
-                g = g * t  # Accumulate into global gain.
+        #         # Apply amplification for each band with probability (imgfilter * strength * band_strength).
+        #         g = torch.ones([batch_size, num_bands], device=device)  # Global gain vector (identity).
+        #         for i, band_strength in enumerate(self.imgfilter_bands):
+        #             t_i = torch.exp2(torch.randn([batch_size], device=device) * self.imgfilter_std)
+        #             t_i = torch.where(
+        #                 torch.rand([batch_size], device=device) < self.imgfilter * self.p * band_strength, t_i,
+        #                 torch.ones_like(t_i))
+        #             if debug_percentile is not None:
+        #                 t_i = torch.full_like(t_i,
+        #                                       torch.exp2(torch.erfinv(debug_percentile * 2 - 1) *
+        #                                                  self.imgfilter_std)) if band_strength > 0 else torch.ones_like(t_i)
+        #             t = torch.ones([batch_size, num_bands], device=device)  # Temporary gain vector.
+        #             t[:, i] = t_i  # Replace i'th element.
+        #             t = t / (expected_power * t.square()).sum(dim=-1, keepdims=True).sqrt()  # Normalize power.
+        #             g = g * t  # Accumulate into global gain.
 
-            # Construct combined amplification filter.
-            Hz_prime = g @ self.Hz_fbank  # [batch, tap]
-            Hz_prime = Hz_prime.unsqueeze(1).repeat([1, num_channels, 1])  # [batch, channels, tap]
-            Hz_prime = Hz_prime.reshape([batch_size * num_channels, 1, -1])  # [batch * channels, 1, tap]
+        #     # Construct combined amplification filter.
+        #     Hz_prime = g @ self.Hz_fbank  # [batch, tap]
+        #     Hz_prime = Hz_prime.unsqueeze(1).repeat([1, num_channels, 1])  # [batch, channels, tap]
+        #     Hz_prime = Hz_prime.reshape([batch_size * num_channels, 1, -1])  # [batch * channels, 1, tap]
 
-            # Apply filter.
-            p = self.Hz_fbank.shape[1] // 2
-            images = images.reshape([1, batch_size * num_channels, height, width])
-            images = torch.nn.functional.pad(input=images, pad=[p, p, p, p], mode='reflect')
-            images = conv2d_gradfix.conv2d(input=images, weight=Hz_prime.unsqueeze(2), groups=batch_size * num_channels)
-            images = conv2d_gradfix.conv2d(input=images, weight=Hz_prime.unsqueeze(3), groups=batch_size * num_channels)
-            images = images.reshape([batch_size, num_channels, height, width])
+        #     # Apply filter.
+        #     p = self.Hz_fbank.shape[1] // 2
+        #     images = images.reshape([1, batch_size * num_channels, height, width])
+        #     images = torch.nn.functional.pad(input=images, pad=[p, p, p, p], mode='reflect')
+        #     images = conv2d_gradfix.conv2d(input=images, weight=Hz_prime.unsqueeze(2), groups=batch_size * num_channels)
+        #     images = conv2d_gradfix.conv2d(input=images, weight=Hz_prime.unsqueeze(3), groups=batch_size * num_channels)
+        #     images = images.reshape([batch_size, num_channels, height, width])
 
         # ------------------------
         # Image-space corruptions.

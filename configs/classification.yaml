@@ -4,15 +4,15 @@ model:
 
 trainer:
   task: 'classification'
-  lr: 0.001
+  lr: 0.0001
   optimizer: 'adam'
   loss: 'cross_entropy'
-  epochs: 1 # 10
+  epochs: 20
 
 dataset:
   validation_split: 0.3
   classes: [0, 1] # Last is minority
-  batch_size: 100
+  batch_size: 256
   oversampling: 'gan' # none, oversampling or gan
   gan_model:
     name: 'wgan' 
