@@ -26,8 +26,10 @@ class GANTrainer(Trainer):
     def __init__(self, trainer_config: Config.Trainer, model: torch.nn.Module, dataset: DataLoader):
         super(GANTrainer, self).__init__(model)
         self.dataset = dataset
-        self.d_optimizer = self._get_optimizer(trainer_config.optimizer, model.D, trainer_config.lr)
-        self.g_optimizer = self._get_optimizer(trainer_config.optimizer, model.G, trainer_config.lr)
+        self.d_optimizer = self._get_optimizer(trainer_config.optimizer, model.D, trainer_config.lr,
+                                               trainer_config.betas)
+        self.g_optimizer = self._get_optimizer(trainer_config.optimizer, model.G, trainer_config.lr,
+                                               trainer_config.betas)
         self.ada = trainer_config.ada
         self.generator_iters = trainer_config.epochs
         self.augment_pipe = None

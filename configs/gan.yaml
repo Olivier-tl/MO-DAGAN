@@ -7,6 +7,7 @@ trainer:
   lr: 0.001
   optimizer: 'adam'
   epochs: 10000 # here, epochs refers to the number of generator iterations
+  betas: [0.5, 0.999]
 
 dataset:
   validation_split: 0

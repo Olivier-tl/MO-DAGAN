@@ -41,6 +41,7 @@ class Config:
         loss: str = None
         epochs: int = None
         ada: bool = None
+        betas: typing.List[float] = None
 
     @dataclass
     class Dataset:

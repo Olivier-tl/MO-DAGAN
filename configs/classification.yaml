@@ -8,6 +8,7 @@ trainer:
   optimizer: 'adam'
   loss: 'cross_entropy'
   epochs: 20
+  betas: [0.9, 0.999]
 
 dataset:
   validation_split: 0.3
