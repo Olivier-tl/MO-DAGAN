@@ -25,7 +25,7 @@ class ClassificationTrainer(Trainer):
         super(ClassificationTrainer, self).__init__(model)
         self.train_dataset = train_dataset
         self.valid_dataset = valid_dataset
-        self.optimizer = self._get_optimizer(trainer_config.optimizer, model, trainer_config.lr)
+        self.optimizer = self._get_optimizer(trainer_config.optimizer, model, trainer_config.lr, trainer_config.betas)
         self.loss = self._get_loss(trainer_config.loss)
         self.num_epoch = trainer_config.epochs
 

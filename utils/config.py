@@ -39,6 +39,7 @@ class Config:
         optimizer: str = None
         loss: str = None
         epochs: int = None
+        betas: typing.List[float] = None
 
     @dataclass
     class Dataset:
