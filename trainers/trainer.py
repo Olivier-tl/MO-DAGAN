@@ -19,10 +19,10 @@ class Trainer():
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.model = model.to(self.device)
 
-    def _get_optimizer(self, opt, model, lr):
+    def _get_optimizer(self, opt, model, lr, betas):
         # NOTE: Might need to set more parameters
         if opt == "adam":
-            return optim.Adam(model.parameters(), lr)
+            return optim.Adam(model.parameters(), lr, betas)
         elif opt == "sgd":
             return optim.SGD(model.parameters(), lr)
         else:
