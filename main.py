@@ -54,7 +54,7 @@ def main(
 
     # Load model
     logger.info('Loading model...')
-    model = ModelFactory.create(model_config=config.model)
+    model = ModelFactory.create(model_config=config.model, n_classes=len(config.dataset.classes))
 
     # Load dataset
     logger.info('Loading dataset...')
