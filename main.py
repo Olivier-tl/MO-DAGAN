@@ -20,14 +20,15 @@ PROJECT_NAME = 'MO-DAGAN'
 
 
 def main(
-    config_path: str = 'configs/classification.yaml',
-    dataset_name: str = 'svhn',
-    imbalance_ratio: int = 1,
-    oversampling: str = 'none',  # none, oversampling, gan
-    ada: bool = False,  # only for gan training
-    seed: int = 1,  # No seed if 0
-    wandb_logs: bool = False,
-):
+        config_path: str = 'configs/classification.yaml',
+        dataset_name: str = 'svhn',
+        imbalance_ratio: int = 1,
+        oversampling: str = 'none',  # none, oversampling, gan
+        ada: bool = False,  # only for gan training
+        seed: int = 1,  # No seed if 0
+        wandb_logs: bool = False,
+        test: bool = False,
+        load_model: bool = False):
     # Ensure output directory exists
     if not os.path.exists(OUTPUT_PATH):
         os.mkdir(OUTPUT_PATH)
@@ -41,7 +42,10 @@ def main(
 
     # Load configuration
     logger.info(f'Loading config at "{config_path}"...')
-    config = load_config(config_path, dataset_name, imbalance_ratio, oversampling, ada)
+    config = load_config(config_path, dataset_name, imbalance_ratio, oversampling, ada, load_model)
+
+    if config.trainer.task == 'generation' and test:
+        raise ValueError('Cannot test the generation models')
 
     # Init logging with WandB
     mode = 'offline' if wandb_logs else 'disabled'
@@ -58,21 +62,24 @@ def main(
 
     # Load dataset
     logger.info('Loading dataset...')
-    train_dataset, valid_dataset, _ = DatasetFactory.create(dataset_config=config.dataset, ada=ada)
+    train_dataset, valid_dataset, test_dataset = DatasetFactory.create(dataset_config=config.dataset, ada=ada)
 
     # Instatiate trainer
     logger.info('Loading trainer...')
     trainer = TrainerFactory.create(trainer_config=config.trainer,
                                     train_dataset=train_dataset,
                                     valid_dataset=valid_dataset,
-                                    model=model)
+                                    model=model,
+                                    classes=config.dataset.classes)
     ada_suffix = '_ada' if config.trainer.ada else ''
     trainer.set_dataset_name(f'{dataset_name}_classes_{"-".join(map(str, config.dataset.classes))}{ada_suffix}')
 
-    # Train
-    logger.info('Training...')
-
-    trainer.train()
+    if test:
+        logger.info('Testing...')
+        trainer.test(test_dataset)
+    else:
+        logger.info('Training...')
+        trainer.train()
 
     # Cleanup
     wandb.finish()

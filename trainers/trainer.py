@@ -1,4 +1,5 @@
 import os
+from typing import List
 
 import torch
 import torch.optim as optim
@@ -15,9 +16,10 @@ SAVED_MODELS_PATH = 'output/saved_models'
 class Trainer():
     """Parent to the trainers. Implement methods that are common across trainers.
     """
-    def __init__(self, model: torch.nn.Module):
+    def __init__(self, model: torch.nn.Module, classes: List[int]):
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.model = model.to(self.device)
+        self.classes = classes
 
     def _get_optimizer(self, opt, model, lr, betas):
         # NOTE: Might need to set more parameters

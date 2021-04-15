@@ -6,10 +6,11 @@ import fire
 datasets = ['mnist', 'fashion-mnist', 'cifar10', 'svhn']
 oversampling_options = ['none', 'oversampling', 'gan']
 imbalance_ratios = [10, 50, 100]
-ada_options = [True, False]
+# ada_options = [True, False]
+ada_options = [False]  # FIXME: TEMP
 
 
-def run_classification():
+def run_classification(test: bool):
     for dataset in datasets:
         for oversampling in oversampling_options:
             for imbalance_ratio in imbalance_ratios:
@@ -19,7 +20,7 @@ def run_classification():
                     subprocess.run([
                         'python', 'main.py', '--config_path=configs/classification.yaml', f'--dataset_name={dataset}',
                         f'--oversampling={oversampling}', f'--imbalance_ratio={imbalance_ratio}', f'--ada={ada}',
-                        '--wandb_logs=True'
+                        f'--test={test}', f'--load_model={test}', '--wandb_logs=True'
                     ])
 
 
@@ -32,9 +33,9 @@ def run_generation():
             ])
 
 
-def main(task: str = 'classification'):
+def main(task: str = 'classification', test: bool = False):
     if task == 'classification':
-        run_classification()
+        run_classification(test)
     elif task == 'generation':
         run_generation()
     else:

@@ -1,7 +1,7 @@
 # Loosely based on : https://pytorch.org/tutorials/beginner/blitz/cifar10_tutorial.html
 
 import random
-from typing import Tuple
+from typing import Tuple, List
 
 import tqdm
 import wandb
@@ -21,8 +21,8 @@ class ClassificationTrainer(Trainer):
     using the splitted test data. 
     """
     def __init__(self, trainer_config: Config.Trainer, model: torch.nn.Module, train_dataset: DataLoader,
-                 valid_dataset: DataLoader):
-        super(ClassificationTrainer, self).__init__(model)
+                 valid_dataset: DataLoader, classes: List[int]):
+        super(ClassificationTrainer, self).__init__(model, classes)
         self.train_dataset = train_dataset
         self.valid_dataset = valid_dataset
         self.optimizer = self._get_optimizer(trainer_config.optimizer, model, trainer_config.lr, trainer_config.betas)
@@ -70,7 +70,7 @@ class ClassificationTrainer(Trainer):
                 wandb.log({'train_loss': total_loss, 'train_accuracy': total_accuracy}, commit=False)
 
             # validation
-            valid_loss, valid_accuracy = self.test(self.valid_dataset, desc='Validation')
+            valid_loss, valid_accuracy = self.test(self.valid_dataset, desc='valid')
             if valid_accuracy > best_accuracy:
                 self.save_model(desc=f'best')
                 best_accuracy = valid_accuracy
@@ -94,9 +94,9 @@ class ClassificationTrainer(Trainer):
                     loss = self.loss(outputs, labels)
                     accuracy = (preds == labels).sum().float() / len(labels)
                     if confusion_matrix == None:
-                        confusion_matrix = metrics.get_confusion_matrix(preds, labels)
+                        confusion_matrix = metrics.get_confusion_matrix(preds, labels, len(self.classes))
                     else:
-                        confusion_matrix += metrics.get_confusion_matrix(preds, labels)
+                        confusion_matrix += metrics.get_confusion_matrix(preds, labels, len(self.classes))
 
                     test_pbar.set_postfix({'loss': f'{loss.item():.3f}', 'accuracy': f'{accuracy.item():.3f}'})
                     total_loss += loss.item()
@@ -111,9 +111,9 @@ class ClassificationTrainer(Trainer):
                 csa_dict = dict(zip(csa_keys, total_csa.cpu().numpy()))
                 wandb.log(csa_dict, commit=False)
                 wandb.log({
-                    'valid_loss': total_loss,
-                    'valid_accuracy': total_accuracy,
-                    'valid_acsa': total_acsa
+                    f'{desc}_loss': total_loss,
+                    f'{desc}_accuracy': total_accuracy,
+                    f'{desc}_acsa': total_acsa
                 },
                           commit=True)
         return total_loss, total_accuracy
