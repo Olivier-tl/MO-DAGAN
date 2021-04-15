@@ -1,6 +1,7 @@
 # Heavily inspired from https://github.com/Zeleni9/pytorch-wgan/blob/master/models/wgan_gradient_penalty.py
 
 import os
+from typing import List
 
 import wandb
 import torch
@@ -23,8 +24,8 @@ ADA_IMG_ZERO_ONE = 200
 
 
 class GANTrainer(Trainer):
-    def __init__(self, trainer_config: Config.Trainer, model: torch.nn.Module, dataset: DataLoader):
-        super(GANTrainer, self).__init__(model)
+    def __init__(self, trainer_config: Config.Trainer, model: torch.nn.Module, dataset: DataLoader, classes: List[int]):
+        super(GANTrainer, self).__init__(model, classes)
         self.dataset = dataset
         self.d_optimizer = self._get_optimizer(trainer_config.optimizer, model.D, trainer_config.lr,
                                                trainer_config.betas)

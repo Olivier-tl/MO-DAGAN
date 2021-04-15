@@ -14,10 +14,9 @@ class ModelFactory:
         elif model_config.name == 'wgan':
             model = WGAN(channels=model_config.input_channels)
         else:
-            raise ValueError(f'model name "{model_config.name}" '
-                             f'in config not recognized.')
+            raise ValueError(f'model name "{model_config.name}" in config not recognized.')
 
-        if model_config.saved_model != '':
+        if model_config.load:
             model.load_model(model_config.saved_model)
 
         return model

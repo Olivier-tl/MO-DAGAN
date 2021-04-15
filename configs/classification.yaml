@@ -1,6 +1,6 @@
 model:
   name: 'efficientnet'
-  saved_model: '' # Path to saved model
+  saved_model: 'output/saved_models/EfficientNet' # Path to saved model
 
 trainer:
   task: 'classification'

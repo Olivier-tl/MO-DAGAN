@@ -12,7 +12,7 @@ DATASET_NB_CHANNELS = {
 }
 
 
-def load_config(path: str, dataset_name: str, imbalance_ratio: int, oversampling: str, ada: bool):
+def load_config(path: str, dataset_name: str, imbalance_ratio: int, oversampling: str, ada: bool, load_model: bool):
     config_schema = class_schema(Config)
     config_dict = yaml.load(open(path), Loader=yaml.Loader)
     config = config_schema().load(config_dict)
@@ -20,8 +20,11 @@ def load_config(path: str, dataset_name: str, imbalance_ratio: int, oversampling
     config.dataset.name = dataset_name
     config.dataset.imbalance_ratio = imbalance_ratio
     config.dataset.oversampling = oversampling
-    config.model.input_channels = DATASET_NB_CHANNELS[dataset_name]
     config.dataset.gan_model.input_channels = DATASET_NB_CHANNELS[dataset_name]
+    config.model.input_channels = DATASET_NB_CHANNELS[dataset_name]
+    config.model.load = load_model
+    if load_model:
+        config.model.saved_model += f'_{dataset_name}_classes_{"-".join(map(str, config.dataset.classes))}'
     return config
 
 
@@ -30,6 +33,7 @@ class Config:
     @dataclass
     class Model:
         name: str = None
+        load: bool = None
         saved_model: str = None
         input_channels: int = None
 
