@@ -17,7 +17,7 @@ from .trainer import Trainer
 logger = logging.getLogger()
 
 IMG_SAMPLES_PATH = 'output/gan_samples'
-SAVE_PER_TIMES = 500
+SAVE_PER_TIMES = 1000
 ADA_UPDATE_INTERVAL = 4
 ADA_TARGET = 0.6
 ADA_IMG_ZERO_ONE = 200
@@ -96,6 +96,8 @@ class GANTrainer(Trainer):
                 # Log to WandB
                 overall_iter = g_iter * self.model.critic_iter + d_iter
                 wandb.log({'d_loss_fake': d_loss_fake, 'd_loss_real': d_loss_real, 'd_iter': overall_iter})
+                print('d_loss_fake : ', d_loss_fake)
+                print('d_loss_real : ', d_loss_real)
 
             # ---------------------
             # Train generator
@@ -118,9 +120,8 @@ class GANTrainer(Trainer):
 
             # Update augment strength
             if self.ada and (g_iter % ADA_UPDATE_INTERVAL == 0) and len(ada_stats) != 0:
-                r_t = torch.mean(torch.stack(ada_stats))
-                adjust = torch.sign(r_t - ADA_TARGET) * (self.dataset.batch_size *
-                                                         ADA_UPDATE_INTERVAL) / ADA_IMG_ZERO_ONE
+                r_t = torch.mean(torch.sign(torch.stack(ada_stats)))
+                adjust = (r_t - ADA_TARGET) * (self.dataset.batch_size * ADA_UPDATE_INTERVAL) / ADA_IMG_ZERO_ONE
                 self.augment_pipe.p.copy_((self.augment_pipe.p + adjust).clamp(0))
                 ada_stats = []
                 wandb.log({'ada_p': self.augment_pipe.p, 'ada_r_t': r_t})

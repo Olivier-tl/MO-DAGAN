@@ -13,8 +13,8 @@ class SyntheticDataset(torch.utils.data.IterableDataset):
         self.label = dataset_config.classes[-1]
         ada_suffix = '_ada' if ada else ''
         dataset_config.gan_model.saved_model += f'_{dataset_config.name}_classes_{self.label}{ada_suffix}'
-        dataset_config.gan_model.saved_model = os.path.join(dataset_config.gan_model.saved_model, 'final_model')
-        self.model = ModelFactory.create(dataset_config.gan_model).to(self.device)
+        self.model = ModelFactory.create(dataset_config.gan_model,
+                                         n_classes=len(dataset_config.classes)).to(self.device)
 
         self.buffer_size = buffer_size
         self.pointer = 0

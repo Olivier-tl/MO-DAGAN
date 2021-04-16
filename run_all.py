@@ -6,8 +6,7 @@ import fire
 datasets = ['mnist', 'fashion-mnist', 'cifar10', 'svhn']
 oversampling_options = ['none', 'oversampling', 'gan']
 imbalance_ratios = [10, 50, 100]
-# ada_options = [True, False]
-ada_options = [False]  # FIXME: TEMP
+ada_options = [True, False]
 
 
 def run_classification(test: bool):
@@ -26,11 +25,12 @@ def run_classification(test: bool):
 
 def run_generation():
     for dataset in datasets:
-        for ada in ada_options:
-            subprocess.run([
-                'python', 'main.py', '--config_path=configs/gan.yaml', f'--dataset_name={dataset}', f'--ada={ada}',
-                '--imbalance_ratio=1', '--oversampling=none', '--wandb_logs=True'
-            ])
+        for imbalance_ratio in imbalance_ratios:
+            for ada in ada_options:
+                subprocess.run([
+                    'python', 'main.py', '--config_path=configs/gan.yaml', f'--dataset_name={dataset}', f'--ada={ada}',
+                    f'--imbalance_ratio={imbalance_ratio}', '--oversampling=none', '--wandb_logs=True'
+                ])
 
 
 def main(task: str = 'classification', test: bool = False):

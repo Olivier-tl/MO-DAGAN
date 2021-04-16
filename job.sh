@@ -8,4 +8,4 @@
 
 source ../venv/bin/activate
 python run_all.py --task=generation
-python run_all.py --task=classification
+# python run_all.py --task=classification --test=True

@@ -71,8 +71,6 @@ def main(
                                     valid_dataset=valid_dataset,
                                     model=model,
                                     classes=config.dataset.classes)
-    ada_suffix = '_ada' if config.trainer.ada else ''
-    trainer.set_dataset_name(f'{dataset_name}_classes_{"-".join(map(str, config.dataset.classes))}{ada_suffix}')
 
     if test:
         logger.info('Testing...')

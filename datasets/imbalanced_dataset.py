@@ -21,24 +21,33 @@ class ImbalancedDataset(torch.utils.data.Dataset):
         """
         self.dataset = dataset
 
+        minority_class_only = False
         if imbalance_ratio != 1 and len(classes) == 1:
-            raise ValueError("Can't create an imbalance if only one classe is selected.")
+            majority_class = classes[0] - 1
+            if majority_class < 0:
+                raise ValueError('Unknown majority class with which to create imbalance')
+            classes.insert(0, majority_class)
+            minority_class_only = True
 
         class_idx = defaultdict(list)
         self.labels = []
         for idx in list(range(len(dataset))):
             label = dataset[idx][1]
-            self.labels.append(label)
             for i in range(len(classes)):
                 if label == classes[i]:
                     class_idx[label].append(idx)
-        self.labels = torch.tensor(self.labels)
 
         trunc_idx = int(len(class_idx[classes[0]]) // imbalance_ratio)
         random.shuffle(class_idx[classes[-1]])
         class_idx[classes[-1]] = class_idx[classes[-1]][:trunc_idx]
+
+        if minority_class_only:
+            classes = [classes[-1]]
         self.imbalanced_indices = list(
             itertools.chain.from_iterable([class_idx[classes[i]] for i in range(len(classes))]))
+
+        # Compute labels
+        self.labels = torch.tensor([dataset[idx][1] for idx in self.imbalanced_indices])
 
     def __getitem__(self, idx):
         return self.dataset[self.imbalanced_indices[idx]]
