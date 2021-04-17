@@ -20,7 +20,7 @@ IMG_SAMPLES_PATH = 'output/gan_samples'
 SAVE_PER_TIMES = 1000
 ADA_UPDATE_INTERVAL = 4
 ADA_TARGET = 0.6
-ADA_IMG_ZERO_ONE = 200
+ADA_IMG_ZERO_ONE = 20000
 
 
 class GANTrainer(Trainer):
@@ -69,6 +69,7 @@ class GANTrainer(Trainer):
 
                 # Train with real images
                 d_loss_real = self.model.D(images)
+
                 if self.ada:
                     ada_stats.append(d_loss_real.detach().flatten())
                 d_loss_real = d_loss_real.mean()
@@ -80,6 +81,7 @@ class GANTrainer(Trainer):
                 fake_images = self.model.G(z)
                 if self.ada:
                     fake_images = self.augment_pipe.forward(fake_images)
+
                 d_loss_fake = self.model.D(fake_images)
 
                 d_loss_fake = d_loss_fake.mean()
@@ -112,6 +114,8 @@ class GANTrainer(Trainer):
             # compute loss with fake images
             z = torch.randn(self.dataset.batch_size, 100, 1, 1).to(self.device)
             fake_images = self.model.G(z)
+            if self.ada:
+                fake_images = self.augment_pipe.forward(fake_images)
             g_loss = self.model.D(fake_images)
             g_loss = g_loss.mean()
             g_loss.backward(mone)
@@ -121,10 +125,11 @@ class GANTrainer(Trainer):
             # Update augment strength
             if self.ada and (g_iter % ADA_UPDATE_INTERVAL == 0) and len(ada_stats) != 0:
                 r_t = torch.mean(torch.sign(torch.stack(ada_stats)))
-                adjust = (r_t - ADA_TARGET) * (self.dataset.batch_size * ADA_UPDATE_INTERVAL) / ADA_IMG_ZERO_ONE
-                self.augment_pipe.p.copy_((self.augment_pipe.p + adjust).clamp(0))
+                adjust = torch.sign(r_t - ADA_TARGET) * (self.dataset.batch_size *
+                                                         ADA_UPDATE_INTERVAL) / ADA_IMG_ZERO_ONE
+                self.augment_pipe.p = (self.augment_pipe.p + adjust).clamp(0)
                 ada_stats = []
-                wandb.log({'ada_p': self.augment_pipe.p, 'ada_r_t': r_t})
+                wandb.log({'ada/p': self.augment_pipe.p, 'ada/r_t': r_t, 'ada/p_step': adjust})
 
             # Log to WandB
             wandb.log({'g_loss': g_loss, 'g_iter': g_iter})

@@ -6,7 +6,8 @@ import fire
 datasets = ['mnist', 'fashion-mnist', 'cifar10', 'svhn']
 oversampling_options = ['none', 'oversampling', 'gan']
 imbalance_ratios = [10, 50, 100]
-ada_options = [True, False]
+# ada_options = [True, False]
+ada_options = [True]  # FIXME: TEMP
 
 
 def run_classification(test: bool):
