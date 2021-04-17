@@ -36,6 +36,7 @@ class GANTrainer(Trainer):
         self.augment_pipe = None
         if self.ada:
             self.augment_pipe = AugmentPipe()
+            self.augment_pipe.p = 0
 
     def train(self):
 
