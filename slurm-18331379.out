@@ -1,0 +1,386 @@
+/var/spool/slurmd/job18331379/slurm_script: line 9: ../venv/bin/activate: No such file or directory
+20:09:45 - INFO - Loading config at "configs/classification.yaml"...
+wandb: W&B syncing is set to `offline` in this directory.  Run `wandb online` or set WANDB_MODE=online to enable cloud syncing.
+20:09:47 - INFO - Loading model...
+Traceback (most recent call last):
+  File "main.py", line 89, in <module>
+    fire.Fire(main)
+  File "/home/nikky/mogan/lib/python3.7/site-packages/fire/core.py", line 141, in Fire
+    component_trace = _Fire(component, args, parsed_flag_args, context, name)
+  File "/home/nikky/mogan/lib/python3.7/site-packages/fire/core.py", line 471, in _Fire
+    target=component.__name__)
+  File "/home/nikky/mogan/lib/python3.7/site-packages/fire/core.py", line 681, in _CallAndUpdateTrace
+    component = fn(*varargs, **kwargs)
+  File "main.py", line 61, in main
+    model = ModelFactory.create(model_config=config.model, n_classes=len(config.dataset.classes))
+  File "/home/nikky/MO-DAGAN/models/model_factory.py", line 21, in create
+    model.load_model()
+  File "/home/nikky/MO-DAGAN/models/classification/efficient_net.py", line 23, in load_model
+    self.load_state_dict(torch.load(path))
+  File "/home/nikky/mogan/lib/python3.7/site-packages/torch/serialization.py", line 581, in load
+    with _open_file_like(f, 'rb') as opened_file:
+  File "/home/nikky/mogan/lib/python3.7/site-packages/torch/serialization.py", line 230, in _open_file_like
+    return _open_file(name_or_buffer, mode)
+  File "/home/nikky/mogan/lib/python3.7/site-packages/torch/serialization.py", line 211, in __init__
+    super(_open_file, self).__init__(open(name, mode))
+FileNotFoundError: [Errno 2] No such file or directory: 'output/saved_models/EfficientNet_mnist_oversampling-gan_IR-10_classes_0-1_ada/best.pt'
+wandb: Waiting for W&B process to finish, PID 29886
+wandb: Program failed with code 1. 
+wandb: Find user logs for this run at: output/wandb/offline-run-20210417_200945-33xigy0q/logs/debug.log
+wandb: Find internal logs for this run at: output/wandb/offline-run-20210417_200945-33xigy0q/logs/debug-internal.log
+wandb: You can sync this run to the cloud by running:
+wandb: wandb sync output/wandb/offline-run-20210417_200945-33xigy0q
+
+20:09:55 - INFO - Loading config at "configs/classification.yaml"...
+wandb: W&B syncing is set to `offline` in this directory.  Run `wandb online` or set WANDB_MODE=online to enable cloud syncing.
+20:09:57 - INFO - Loading model...
+Traceback (most recent call last):
+  File "main.py", line 89, in <module>
+    fire.Fire(main)
+  File "/home/nikky/mogan/lib/python3.7/site-packages/fire/core.py", line 141, in Fire
+    component_trace = _Fire(component, args, parsed_flag_args, context, name)
+  File "/home/nikky/mogan/lib/python3.7/site-packages/fire/core.py", line 471, in _Fire
+    target=component.__name__)
+  File "/home/nikky/mogan/lib/python3.7/site-packages/fire/core.py", line 681, in _CallAndUpdateTrace
+    component = fn(*varargs, **kwargs)
+  File "main.py", line 61, in main
+    model = ModelFactory.create(model_config=config.model, n_classes=len(config.dataset.classes))
+  File "/home/nikky/MO-DAGAN/models/model_factory.py", line 21, in create
+    model.load_model()
+  File "/home/nikky/MO-DAGAN/models/classification/efficient_net.py", line 23, in load_model
+    self.load_state_dict(torch.load(path))
+  File "/home/nikky/mogan/lib/python3.7/site-packages/torch/serialization.py", line 581, in load
+    with _open_file_like(f, 'rb') as opened_file:
+  File "/home/nikky/mogan/lib/python3.7/site-packages/torch/serialization.py", line 230, in _open_file_like
+    return _open_file(name_or_buffer, mode)
+  File "/home/nikky/mogan/lib/python3.7/site-packages/torch/serialization.py", line 211, in __init__
+    super(_open_file, self).__init__(open(name, mode))
+FileNotFoundError: [Errno 2] No such file or directory: 'output/saved_models/EfficientNet_mnist_oversampling-gan_IR-50_classes_0-1_ada/best.pt'
+wandb: Waiting for W&B process to finish, PID 30160
+wandb: Program failed with code 1. 
+wandb: Find user logs for this run at: output/wandb/offline-run-20210417_200955-1exugs5c/logs/debug.log
+wandb: Find internal logs for this run at: output/wandb/offline-run-20210417_200955-1exugs5c/logs/debug-internal.log
+wandb: You can sync this run to the cloud by running:
+wandb: wandb sync output/wandb/offline-run-20210417_200955-1exugs5c
+
+20:10:04 - INFO - Loading config at "configs/classification.yaml"...
+wandb: W&B syncing is set to `offline` in this directory.  Run `wandb online` or set WANDB_MODE=online to enable cloud syncing.
+20:10:06 - INFO - Loading model...
+Traceback (most recent call last):
+  File "main.py", line 89, in <module>
+    fire.Fire(main)
+  File "/home/nikky/mogan/lib/python3.7/site-packages/fire/core.py", line 141, in Fire
+    component_trace = _Fire(component, args, parsed_flag_args, context, name)
+  File "/home/nikky/mogan/lib/python3.7/site-packages/fire/core.py", line 471, in _Fire
+    target=component.__name__)
+  File "/home/nikky/mogan/lib/python3.7/site-packages/fire/core.py", line 681, in _CallAndUpdateTrace
+    component = fn(*varargs, **kwargs)
+  File "main.py", line 61, in main
+    model = ModelFactory.create(model_config=config.model, n_classes=len(config.dataset.classes))
+  File "/home/nikky/MO-DAGAN/models/model_factory.py", line 21, in create
+    model.load_model()
+  File "/home/nikky/MO-DAGAN/models/classification/efficient_net.py", line 23, in load_model
+    self.load_state_dict(torch.load(path))
+  File "/home/nikky/mogan/lib/python3.7/site-packages/torch/serialization.py", line 581, in load
+    with _open_file_like(f, 'rb') as opened_file:
+  File "/home/nikky/mogan/lib/python3.7/site-packages/torch/serialization.py", line 230, in _open_file_like
+    return _open_file(name_or_buffer, mode)
+  File "/home/nikky/mogan/lib/python3.7/site-packages/torch/serialization.py", line 211, in __init__
+    super(_open_file, self).__init__(open(name, mode))
+FileNotFoundError: [Errno 2] No such file or directory: 'output/saved_models/EfficientNet_mnist_oversampling-gan_IR-100_classes_0-1_ada/best.pt'
+wandb: Waiting for W&B process to finish, PID 32206
+wandb: Program failed with code 1. 
+wandb: Find user logs for this run at: output/wandb/offline-run-20210417_201004-tyee2nmg/logs/debug.log
+wandb: Find internal logs for this run at: output/wandb/offline-run-20210417_201004-tyee2nmg/logs/debug-internal.log
+wandb: You can sync this run to the cloud by running:
+wandb: wandb sync output/wandb/offline-run-20210417_201004-tyee2nmg
+
+20:10:14 - INFO - Loading config at "configs/classification.yaml"...
+wandb: W&B syncing is set to `offline` in this directory.  Run `wandb online` or set WANDB_MODE=online to enable cloud syncing.
+20:10:15 - INFO - Loading model...
+Traceback (most recent call last):
+  File "main.py", line 89, in <module>
+    fire.Fire(main)
+  File "/home/nikky/mogan/lib/python3.7/site-packages/fire/core.py", line 141, in Fire
+    component_trace = _Fire(component, args, parsed_flag_args, context, name)
+  File "/home/nikky/mogan/lib/python3.7/site-packages/fire/core.py", line 471, in _Fire
+    target=component.__name__)
+  File "/home/nikky/mogan/lib/python3.7/site-packages/fire/core.py", line 681, in _CallAndUpdateTrace
+    component = fn(*varargs, **kwargs)
+  File "main.py", line 61, in main
+    model = ModelFactory.create(model_config=config.model, n_classes=len(config.dataset.classes))
+  File "/home/nikky/MO-DAGAN/models/model_factory.py", line 21, in create
+    model.load_model()
+  File "/home/nikky/MO-DAGAN/models/classification/efficient_net.py", line 23, in load_model
+    self.load_state_dict(torch.load(path))
+  File "/home/nikky/mogan/lib/python3.7/site-packages/torch/serialization.py", line 581, in load
+    with _open_file_like(f, 'rb') as opened_file:
+  File "/home/nikky/mogan/lib/python3.7/site-packages/torch/serialization.py", line 230, in _open_file_like
+    return _open_file(name_or_buffer, mode)
+  File "/home/nikky/mogan/lib/python3.7/site-packages/torch/serialization.py", line 211, in __init__
+    super(_open_file, self).__init__(open(name, mode))
+FileNotFoundError: [Errno 2] No such file or directory: 'output/saved_models/EfficientNet_fashion-mnist_oversampling-gan_IR-10_classes_0-1_ada/best.pt'
+wandb: Waiting for W&B process to finish, PID 32500
+wandb: Program failed with code 1. 
+wandb: Find user logs for this run at: output/wandb/offline-run-20210417_201014-30s1ikoa/logs/debug.log
+wandb: Find internal logs for this run at: output/wandb/offline-run-20210417_201014-30s1ikoa/logs/debug-internal.log
+wandb: You can sync this run to the cloud by running:
+wandb: wandb sync output/wandb/offline-run-20210417_201014-30s1ikoa
+
+20:10:23 - INFO - Loading config at "configs/classification.yaml"...
+wandb: W&B syncing is set to `offline` in this directory.  Run `wandb online` or set WANDB_MODE=online to enable cloud syncing.
+20:10:24 - INFO - Loading model...
+Traceback (most recent call last):
+  File "main.py", line 89, in <module>
+    fire.Fire(main)
+  File "/home/nikky/mogan/lib/python3.7/site-packages/fire/core.py", line 141, in Fire
+    component_trace = _Fire(component, args, parsed_flag_args, context, name)
+  File "/home/nikky/mogan/lib/python3.7/site-packages/fire/core.py", line 471, in _Fire
+    target=component.__name__)
+  File "/home/nikky/mogan/lib/python3.7/site-packages/fire/core.py", line 681, in _CallAndUpdateTrace
+    component = fn(*varargs, **kwargs)
+  File "main.py", line 61, in main
+    model = ModelFactory.create(model_config=config.model, n_classes=len(config.dataset.classes))
+  File "/home/nikky/MO-DAGAN/models/model_factory.py", line 21, in create
+    model.load_model()
+  File "/home/nikky/MO-DAGAN/models/classification/efficient_net.py", line 23, in load_model
+    self.load_state_dict(torch.load(path))
+  File "/home/nikky/mogan/lib/python3.7/site-packages/torch/serialization.py", line 581, in load
+    with _open_file_like(f, 'rb') as opened_file:
+  File "/home/nikky/mogan/lib/python3.7/site-packages/torch/serialization.py", line 230, in _open_file_like
+    return _open_file(name_or_buffer, mode)
+  File "/home/nikky/mogan/lib/python3.7/site-packages/torch/serialization.py", line 211, in __init__
+    super(_open_file, self).__init__(open(name, mode))
+FileNotFoundError: [Errno 2] No such file or directory: 'output/saved_models/EfficientNet_fashion-mnist_oversampling-gan_IR-50_classes_0-1_ada/best.pt'
+wandb: Waiting for W&B process to finish, PID 32702
+wandb: Program failed with code 1. 
+wandb: Find user logs for this run at: output/wandb/offline-run-20210417_201023-11jxo3uw/logs/debug.log
+wandb: Find internal logs for this run at: output/wandb/offline-run-20210417_201023-11jxo3uw/logs/debug-internal.log
+wandb: You can sync this run to the cloud by running:
+wandb: wandb sync output/wandb/offline-run-20210417_201023-11jxo3uw
+
+20:10:32 - INFO - Loading config at "configs/classification.yaml"...
+wandb: W&B syncing is set to `offline` in this directory.  Run `wandb online` or set WANDB_MODE=online to enable cloud syncing.
+20:10:33 - INFO - Loading model...
+Traceback (most recent call last):
+  File "main.py", line 89, in <module>
+    fire.Fire(main)
+  File "/home/nikky/mogan/lib/python3.7/site-packages/fire/core.py", line 141, in Fire
+    component_trace = _Fire(component, args, parsed_flag_args, context, name)
+  File "/home/nikky/mogan/lib/python3.7/site-packages/fire/core.py", line 471, in _Fire
+    target=component.__name__)
+  File "/home/nikky/mogan/lib/python3.7/site-packages/fire/core.py", line 681, in _CallAndUpdateTrace
+    component = fn(*varargs, **kwargs)
+  File "main.py", line 61, in main
+    model = ModelFactory.create(model_config=config.model, n_classes=len(config.dataset.classes))
+  File "/home/nikky/MO-DAGAN/models/model_factory.py", line 21, in create
+    model.load_model()
+  File "/home/nikky/MO-DAGAN/models/classification/efficient_net.py", line 23, in load_model
+    self.load_state_dict(torch.load(path))
+  File "/home/nikky/mogan/lib/python3.7/site-packages/torch/serialization.py", line 581, in load
+    with _open_file_like(f, 'rb') as opened_file:
+  File "/home/nikky/mogan/lib/python3.7/site-packages/torch/serialization.py", line 230, in _open_file_like
+    return _open_file(name_or_buffer, mode)
+  File "/home/nikky/mogan/lib/python3.7/site-packages/torch/serialization.py", line 211, in __init__
+    super(_open_file, self).__init__(open(name, mode))
+FileNotFoundError: [Errno 2] No such file or directory: 'output/saved_models/EfficientNet_fashion-mnist_oversampling-gan_IR-100_classes_0-1_ada/best.pt'
+wandb: Waiting for W&B process to finish, PID 32965
+wandb: Program failed with code 1. 
+wandb: Find user logs for this run at: output/wandb/offline-run-20210417_201032-3b0pkpl1/logs/debug.log
+wandb: Find internal logs for this run at: output/wandb/offline-run-20210417_201032-3b0pkpl1/logs/debug-internal.log
+wandb: You can sync this run to the cloud by running:
+wandb: wandb sync output/wandb/offline-run-20210417_201032-3b0pkpl1
+
+20:10:41 - INFO - Loading config at "configs/classification.yaml"...
+wandb: W&B syncing is set to `offline` in this directory.  Run `wandb online` or set WANDB_MODE=online to enable cloud syncing.
+20:10:42 - INFO - Loading model...
+Traceback (most recent call last):
+  File "main.py", line 89, in <module>
+    fire.Fire(main)
+  File "/home/nikky/mogan/lib/python3.7/site-packages/fire/core.py", line 141, in Fire
+    component_trace = _Fire(component, args, parsed_flag_args, context, name)
+  File "/home/nikky/mogan/lib/python3.7/site-packages/fire/core.py", line 471, in _Fire
+    target=component.__name__)
+  File "/home/nikky/mogan/lib/python3.7/site-packages/fire/core.py", line 681, in _CallAndUpdateTrace
+    component = fn(*varargs, **kwargs)
+  File "main.py", line 61, in main
+    model = ModelFactory.create(model_config=config.model, n_classes=len(config.dataset.classes))
+  File "/home/nikky/MO-DAGAN/models/model_factory.py", line 21, in create
+    model.load_model()
+  File "/home/nikky/MO-DAGAN/models/classification/efficient_net.py", line 23, in load_model
+    self.load_state_dict(torch.load(path))
+  File "/home/nikky/mogan/lib/python3.7/site-packages/torch/serialization.py", line 581, in load
+    with _open_file_like(f, 'rb') as opened_file:
+  File "/home/nikky/mogan/lib/python3.7/site-packages/torch/serialization.py", line 230, in _open_file_like
+    return _open_file(name_or_buffer, mode)
+  File "/home/nikky/mogan/lib/python3.7/site-packages/torch/serialization.py", line 211, in __init__
+    super(_open_file, self).__init__(open(name, mode))
+FileNotFoundError: [Errno 2] No such file or directory: 'output/saved_models/EfficientNet_cifar10_oversampling-gan_IR-10_classes_0-1_ada/best.pt'
+wandb: Waiting for W&B process to finish, PID 33205
+wandb: Program failed with code 1. 
+wandb: Find user logs for this run at: output/wandb/offline-run-20210417_201041-lscu5agy/logs/debug.log
+wandb: Find internal logs for this run at: output/wandb/offline-run-20210417_201041-lscu5agy/logs/debug-internal.log
+wandb: You can sync this run to the cloud by running:
+wandb: wandb sync output/wandb/offline-run-20210417_201041-lscu5agy
+
+20:10:50 - INFO - Loading config at "configs/classification.yaml"...
+wandb: W&B syncing is set to `offline` in this directory.  Run `wandb online` or set WANDB_MODE=online to enable cloud syncing.
+20:10:51 - INFO - Loading model...
+Traceback (most recent call last):
+  File "main.py", line 89, in <module>
+    fire.Fire(main)
+  File "/home/nikky/mogan/lib/python3.7/site-packages/fire/core.py", line 141, in Fire
+    component_trace = _Fire(component, args, parsed_flag_args, context, name)
+  File "/home/nikky/mogan/lib/python3.7/site-packages/fire/core.py", line 471, in _Fire
+    target=component.__name__)
+  File "/home/nikky/mogan/lib/python3.7/site-packages/fire/core.py", line 681, in _CallAndUpdateTrace
+    component = fn(*varargs, **kwargs)
+  File "main.py", line 61, in main
+    model = ModelFactory.create(model_config=config.model, n_classes=len(config.dataset.classes))
+  File "/home/nikky/MO-DAGAN/models/model_factory.py", line 21, in create
+    model.load_model()
+  File "/home/nikky/MO-DAGAN/models/classification/efficient_net.py", line 23, in load_model
+    self.load_state_dict(torch.load(path))
+  File "/home/nikky/mogan/lib/python3.7/site-packages/torch/serialization.py", line 581, in load
+    with _open_file_like(f, 'rb') as opened_file:
+  File "/home/nikky/mogan/lib/python3.7/site-packages/torch/serialization.py", line 230, in _open_file_like
+    return _open_file(name_or_buffer, mode)
+  File "/home/nikky/mogan/lib/python3.7/site-packages/torch/serialization.py", line 211, in __init__
+    super(_open_file, self).__init__(open(name, mode))
+FileNotFoundError: [Errno 2] No such file or directory: 'output/saved_models/EfficientNet_cifar10_oversampling-gan_IR-50_classes_0-1_ada/best.pt'
+wandb: Waiting for W&B process to finish, PID 33501
+wandb: Program failed with code 1. 
+wandb: Find user logs for this run at: output/wandb/offline-run-20210417_201050-1i7vfgsw/logs/debug.log
+wandb: Find internal logs for this run at: output/wandb/offline-run-20210417_201050-1i7vfgsw/logs/debug-internal.log
+wandb: You can sync this run to the cloud by running:
+wandb: wandb sync output/wandb/offline-run-20210417_201050-1i7vfgsw
+
+20:10:59 - INFO - Loading config at "configs/classification.yaml"...
+wandb: W&B syncing is set to `offline` in this directory.  Run `wandb online` or set WANDB_MODE=online to enable cloud syncing.
+20:11:00 - INFO - Loading model...
+Traceback (most recent call last):
+  File "main.py", line 89, in <module>
+    fire.Fire(main)
+  File "/home/nikky/mogan/lib/python3.7/site-packages/fire/core.py", line 141, in Fire
+    component_trace = _Fire(component, args, parsed_flag_args, context, name)
+  File "/home/nikky/mogan/lib/python3.7/site-packages/fire/core.py", line 471, in _Fire
+    target=component.__name__)
+  File "/home/nikky/mogan/lib/python3.7/site-packages/fire/core.py", line 681, in _CallAndUpdateTrace
+    component = fn(*varargs, **kwargs)
+  File "main.py", line 61, in main
+    model = ModelFactory.create(model_config=config.model, n_classes=len(config.dataset.classes))
+  File "/home/nikky/MO-DAGAN/models/model_factory.py", line 21, in create
+    model.load_model()
+  File "/home/nikky/MO-DAGAN/models/classification/efficient_net.py", line 23, in load_model
+    self.load_state_dict(torch.load(path))
+  File "/home/nikky/mogan/lib/python3.7/site-packages/torch/serialization.py", line 581, in load
+    with _open_file_like(f, 'rb') as opened_file:
+  File "/home/nikky/mogan/lib/python3.7/site-packages/torch/serialization.py", line 230, in _open_file_like
+    return _open_file(name_or_buffer, mode)
+  File "/home/nikky/mogan/lib/python3.7/site-packages/torch/serialization.py", line 211, in __init__
+    super(_open_file, self).__init__(open(name, mode))
+FileNotFoundError: [Errno 2] No such file or directory: 'output/saved_models/EfficientNet_cifar10_oversampling-gan_IR-100_classes_0-1_ada/best.pt'
+wandb: Waiting for W&B process to finish, PID 33806
+wandb: Program failed with code 1. 
+wandb: Find user logs for this run at: output/wandb/offline-run-20210417_201059-2zcweivf/logs/debug.log
+wandb: Find internal logs for this run at: output/wandb/offline-run-20210417_201059-2zcweivf/logs/debug-internal.log
+wandb: You can sync this run to the cloud by running:
+wandb: wandb sync output/wandb/offline-run-20210417_201059-2zcweivf
+
+20:11:08 - INFO - Loading config at "configs/classification.yaml"...
+wandb: W&B syncing is set to `offline` in this directory.  Run `wandb online` or set WANDB_MODE=online to enable cloud syncing.
+20:11:09 - INFO - Loading model...
+Traceback (most recent call last):
+  File "main.py", line 89, in <module>
+    fire.Fire(main)
+  File "/home/nikky/mogan/lib/python3.7/site-packages/fire/core.py", line 141, in Fire
+    component_trace = _Fire(component, args, parsed_flag_args, context, name)
+  File "/home/nikky/mogan/lib/python3.7/site-packages/fire/core.py", line 471, in _Fire
+    target=component.__name__)
+  File "/home/nikky/mogan/lib/python3.7/site-packages/fire/core.py", line 681, in _CallAndUpdateTrace
+    component = fn(*varargs, **kwargs)
+  File "main.py", line 61, in main
+    model = ModelFactory.create(model_config=config.model, n_classes=len(config.dataset.classes))
+  File "/home/nikky/MO-DAGAN/models/model_factory.py", line 21, in create
+    model.load_model()
+  File "/home/nikky/MO-DAGAN/models/classification/efficient_net.py", line 23, in load_model
+    self.load_state_dict(torch.load(path))
+  File "/home/nikky/mogan/lib/python3.7/site-packages/torch/serialization.py", line 581, in load
+    with _open_file_like(f, 'rb') as opened_file:
+  File "/home/nikky/mogan/lib/python3.7/site-packages/torch/serialization.py", line 230, in _open_file_like
+    return _open_file(name_or_buffer, mode)
+  File "/home/nikky/mogan/lib/python3.7/site-packages/torch/serialization.py", line 211, in __init__
+    super(_open_file, self).__init__(open(name, mode))
+FileNotFoundError: [Errno 2] No such file or directory: 'output/saved_models/EfficientNet_svhn_oversampling-gan_IR-10_classes_0-1_ada/best.pt'
+wandb: Waiting for W&B process to finish, PID 34120
+wandb: Program failed with code 1. 
+wandb: Find user logs for this run at: output/wandb/offline-run-20210417_201108-2zmj260z/logs/debug.log
+wandb: Find internal logs for this run at: output/wandb/offline-run-20210417_201108-2zmj260z/logs/debug-internal.log
+wandb: You can sync this run to the cloud by running:
+wandb: wandb sync output/wandb/offline-run-20210417_201108-2zmj260z
+
+20:11:17 - INFO - Loading config at "configs/classification.yaml"...
+wandb: W&B syncing is set to `offline` in this directory.  Run `wandb online` or set WANDB_MODE=online to enable cloud syncing.
+20:11:18 - INFO - Loading model...
+Traceback (most recent call last):
+  File "main.py", line 89, in <module>
+    fire.Fire(main)
+  File "/home/nikky/mogan/lib/python3.7/site-packages/fire/core.py", line 141, in Fire
+    component_trace = _Fire(component, args, parsed_flag_args, context, name)
+  File "/home/nikky/mogan/lib/python3.7/site-packages/fire/core.py", line 471, in _Fire
+    target=component.__name__)
+  File "/home/nikky/mogan/lib/python3.7/site-packages/fire/core.py", line 681, in _CallAndUpdateTrace
+    component = fn(*varargs, **kwargs)
+  File "main.py", line 61, in main
+    model = ModelFactory.create(model_config=config.model, n_classes=len(config.dataset.classes))
+  File "/home/nikky/MO-DAGAN/models/model_factory.py", line 21, in create
+    model.load_model()
+  File "/home/nikky/MO-DAGAN/models/classification/efficient_net.py", line 23, in load_model
+    self.load_state_dict(torch.load(path))
+  File "/home/nikky/mogan/lib/python3.7/site-packages/torch/serialization.py", line 581, in load
+    with _open_file_like(f, 'rb') as opened_file:
+  File "/home/nikky/mogan/lib/python3.7/site-packages/torch/serialization.py", line 230, in _open_file_like
+    return _open_file(name_or_buffer, mode)
+  File "/home/nikky/mogan/lib/python3.7/site-packages/torch/serialization.py", line 211, in __init__
+    super(_open_file, self).__init__(open(name, mode))
+FileNotFoundError: [Errno 2] No such file or directory: 'output/saved_models/EfficientNet_svhn_oversampling-gan_IR-50_classes_0-1_ada/best.pt'
+wandb: Waiting for W&B process to finish, PID 34322
+wandb: Program failed with code 1. 
+wandb: Find user logs for this run at: output/wandb/offline-run-20210417_201117-2hsotsdp/logs/debug.log
+wandb: Find internal logs for this run at: output/wandb/offline-run-20210417_201117-2hsotsdp/logs/debug-internal.log
+wandb: You can sync this run to the cloud by running:
+wandb: wandb sync output/wandb/offline-run-20210417_201117-2hsotsdp
+
+20:11:26 - INFO - Loading config at "configs/classification.yaml"...
+wandb: W&B syncing is set to `offline` in this directory.  Run `wandb online` or set WANDB_MODE=online to enable cloud syncing.
+20:11:27 - INFO - Loading model...
+Traceback (most recent call last):
+  File "main.py", line 89, in <module>
+    fire.Fire(main)
+  File "/home/nikky/mogan/lib/python3.7/site-packages/fire/core.py", line 141, in Fire
+    component_trace = _Fire(component, args, parsed_flag_args, context, name)
+  File "/home/nikky/mogan/lib/python3.7/site-packages/fire/core.py", line 471, in _Fire
+    target=component.__name__)
+  File "/home/nikky/mogan/lib/python3.7/site-packages/fire/core.py", line 681, in _CallAndUpdateTrace
+    component = fn(*varargs, **kwargs)
+  File "main.py", line 61, in main
+    model = ModelFactory.create(model_config=config.model, n_classes=len(config.dataset.classes))
+  File "/home/nikky/MO-DAGAN/models/model_factory.py", line 21, in create
+    model.load_model()
+  File "/home/nikky/MO-DAGAN/models/classification/efficient_net.py", line 23, in load_model
+    self.load_state_dict(torch.load(path))
+  File "/home/nikky/mogan/lib/python3.7/site-packages/torch/serialization.py", line 581, in load
+    with _open_file_like(f, 'rb') as opened_file:
+  File "/home/nikky/mogan/lib/python3.7/site-packages/torch/serialization.py", line 230, in _open_file_like
+    return _open_file(name_or_buffer, mode)
+  File "/home/nikky/mogan/lib/python3.7/site-packages/torch/serialization.py", line 211, in __init__
+    super(_open_file, self).__init__(open(name, mode))
+FileNotFoundError: [Errno 2] No such file or directory: 'output/saved_models/EfficientNet_svhn_oversampling-gan_IR-100_classes_0-1_ada/best.pt'
+wandb: Waiting for W&B process to finish, PID 34619
+wandb: Program failed with code 1. 
+wandb: Find user logs for this run at: output/wandb/offline-run-20210417_201126-3mg16qy9/logs/debug.log
+wandb: Find internal logs for this run at: output/wandb/offline-run-20210417_201126-3mg16qy9/logs/debug-internal.log
+wandb: You can sync this run to the cloud by running:
+wandb: wandb sync output/wandb/offline-run-20210417_201126-3mg16qy9
+
+all done ;}
