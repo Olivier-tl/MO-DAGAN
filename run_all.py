@@ -30,7 +30,8 @@ def run_generation():
             for ada in ada_options:
                 subprocess.run([
                     'python', 'main.py', '--config_path=configs/gan.yaml', f'--dataset_name={dataset}', f'--ada={ada}',
-                    f'--imbalance_ratio={imbalance_ratio}', '--oversampling=none', '--wandb_logs=True'
+                    f'--imbalance_ratio={imbalance_ratio}', '--oversampling=none', '--wandb_logs=True',
+                    '--load_model=False'
                 ])
 
 
