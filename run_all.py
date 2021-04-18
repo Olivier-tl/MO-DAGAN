@@ -26,11 +26,13 @@ def run_classification(test: bool):
 
 def run_generation():
     for dataset in datasets:
-        for ada in ada_options:
-            subprocess.run([
-                'python', 'main.py', '--config_path=configs/gan.yaml', f'--dataset_name={dataset}', f'--ada={ada}',
-                '--imbalance_ratio=1', '--oversampling=none', '--wandb_logs=True'
-            ])
+        for imbalance_ratio in imbalance_ratios:
+            for ada in ada_options:
+                subprocess.run([
+                    'python', 'main.py', '--config_path=configs/gan.yaml', f'--dataset_name={dataset}', f'--ada={ada}',
+                    f'--imbalance_ratio={imbalance_ratio}', '--oversampling=none', '--wandb_logs=True',
+                    '--load_model=False'
+                ])
 
 
 def main(task: str = 'classification', test: bool = False):

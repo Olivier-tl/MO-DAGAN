@@ -107,7 +107,7 @@ class ClassificationTrainer(Trainer):
                 total_csa = metrics.get_CSA(confusion_matrix)
                 total_acsa = torch.mean(total_csa)
                 test_pbar.set_postfix({'loss': f'{total_loss:.3f}', 'accuracy': f'{total_accuracy:.3f}'})
-                csa_keys = [f'Class {c} accuracy' for c in np.unique(labels.cpu().numpy())]
+                csa_keys = [f'Class {c} accuracy' for c in self.classes]
                 csa_dict = dict(zip(csa_keys, total_csa.cpu().numpy()))
                 wandb.log(csa_dict, commit=False)
                 wandb.log({

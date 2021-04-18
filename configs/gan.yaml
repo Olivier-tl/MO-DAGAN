@@ -1,18 +1,18 @@
 model:
   name: 'wgan'
-  saved_model: '' # Path to saved model
+  saved_model: 'output/saved_models/WGAN' # Path to saved model
 
 trainer:
   task: 'generation'
-  lr: 0.001
+  lr: 0.0001
   optimizer: 'adam'
-  epochs: 10000 # here, epochs refers to the number of generator iterations
+  epochs: 5000 # here, epochs refers to the number of generator iterations
   betas: [0.5, 0.999]
 
 dataset:
   validation_split: 0
   classes: [1]
-  batch_size: 100
+  batch_size: 64
   oversampling: 'none'
   gan_model:
     name: '' 

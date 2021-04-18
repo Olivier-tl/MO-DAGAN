@@ -1,0 +1,9 @@
+/var/spool/slurmd/job18391942/slurm_script: line 9: ../venv/bin/activate: No such file or directory
+  File "run_all.py", line 13
+    def run_classification(test: bool):
+                               ^
+SyntaxError: invalid syntax
+  File "run_all.py", line 13
+    def run_classification(test: bool):
+                               ^
+SyntaxError: invalid syntax
