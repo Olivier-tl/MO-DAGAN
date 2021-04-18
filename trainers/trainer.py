@@ -34,7 +34,7 @@ class Trainer():
     def _get_loss(self, loss):
         # NOTE: Might need to set more possible losses/criterions
         if loss == "cross_entropy":
-            return nn.CrossEntropyLoss()
+            return nn.CrossEntropyLoss(reduction='sum')
         else:
             logger.warning('Loss "{loss}" not recognized. Falling back to cross_entropy loss by default')
             return nn.crossEntropyLoss()

@@ -34,6 +34,7 @@ def load_config(path: str, dataset_name: str, imbalance_ratio: int, oversampling
     imbalance_ratio_suffix = f'_IR-{imbalance_ratio}'
     ada_suffix = '_ada' if config.trainer.ada else ''
     config.model.saved_model += f'_{dataset_name}{oversampling_suffix}{imbalance_ratio_suffix}_classes_{"-".join(map(str, config.dataset.classes))}{ada_suffix}'
+    config.dataset.gan_model.saved_model += f'_{dataset_name}{imbalance_ratio_suffix}_classes_{config.dataset.classes[-1]}{ada_suffix}'
     os.makedirs(config.model.saved_model, exist_ok=True)
     return config
 
