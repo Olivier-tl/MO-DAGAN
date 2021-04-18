@@ -35,8 +35,8 @@ class GANTrainer(Trainer):
         self.generator_iters = trainer_config.epochs
         self.augment_pipe = None
         if self.ada:
-            self.augment_pipe = AugmentPipe()
-            self.augment_pipe.p = 0
+            self.augment_pipe = AugmentPipe().to(self.device)
+            self.augment_pipe.p = torch.Tensor([0]).to(self.device)
 
     def train(self):
 
@@ -99,9 +99,7 @@ class GANTrainer(Trainer):
                 # Log to WandB
                 overall_iter = g_iter * self.model.critic_iter + d_iter
                 wandb.log({'d_loss_fake': d_loss_fake, 'd_loss_real': d_loss_real, 'd_iter': overall_iter})
-                print('d_loss_fake : ', d_loss_fake)
-                print('d_loss_real : ', d_loss_real)
-
+                
             # ---------------------
             # Train generator
             # ---------------------
@@ -130,7 +128,7 @@ class GANTrainer(Trainer):
                                                          ADA_UPDATE_INTERVAL) / ADA_IMG_ZERO_ONE
                 self.augment_pipe.p = (self.augment_pipe.p + adjust).clamp(0)
                 ada_stats = []
-                wandb.log({'ada/p': self.augment_pipe.p, 'ada/r_t': r_t, 'ada/p_step': adjust})
+                wandb.log({'ada/p': self.augment_pipe.p.cpu(), 'ada/r_t': r_t.cpu(), 'ada/p_step': adjust.cpu()})
 
             # Log to WandB
             wandb.log({'g_loss': g_loss, 'g_iter': g_iter})
