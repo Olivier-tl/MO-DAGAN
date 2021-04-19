@@ -73,10 +73,14 @@ class DatasetFactory:
 
 def get_balanced_sampler(labels):
     # Create balanced sampler
+    
     class_sample_count = np.array([len(np.where(labels == l)[0]) for l in np.unique(labels)])
     weight = 1. / class_sample_count
     samples_weight = np.array([weight[l] for l in labels])
 
     samples_weight = torch.from_numpy(samples_weight)
     samples_weigth = samples_weight.double()
-    return WeightedRandomSampler(samples_weight, len(samples_weight))
+
+    n_labels = len(np.unique(labels))
+    num_samples = int(n_labels * np.max(class_sample_count))
+    return WeightedRandomSampler(samples_weight, num_samples=num_samples)
