@@ -35,6 +35,7 @@ class ClassificationTrainer(Trainer):
             self.model.train()
             total_loss = 0.0
             total_accuracy = 0.0
+            total_examples = 0
             with tqdm.tqdm(enumerate(self.train_dataset, 0),
                            desc=f'Training Epoch {epoch+1}',
                            total=len(self.train_dataset)) as train_pbar:
@@ -58,7 +59,7 @@ class ClassificationTrainer(Trainer):
                     accuracy = (preds == labels).sum().float()
 
                     # print statistics
-                    train_pbar.set_postfix({'loss': f'{loss.item():.3f}', 'accuracy': f'{accuracy.item():.3f}'})
+                    train_pbar.set_postfix({'loss': f'{loss.item()/len(labels):.3f}', 'accuracy': f'{accuracy.item()/len(labels):.3f}'})
                     total_loss += loss.item()
                     total_accuracy += accuracy.item()
                     total_examples += len(inputs)
@@ -100,7 +101,7 @@ class ClassificationTrainer(Trainer):
                     else:
                         confusion_matrix += metrics.get_confusion_matrix(preds, labels, len(self.classes))
 
-                    test_pbar.set_postfix({'loss': f'{loss.item():.3f}', 'accuracy': f'{accuracy.item():.3f}'})
+                    test_pbar.set_postfix({'loss': f'{loss.item()/len(labels):.3f}', 'accuracy': f'{accuracy.item()/len(labels):.3f}'})
                     total_loss += loss.item()
                     total_accuracy += accuracy.item()
                     total_examples += len(inputs)
