@@ -13,7 +13,8 @@ DATASET_NB_CHANNELS = {
 }
 
 
-def load_config(path: str, dataset_name: str, imbalance_ratio: int, oversampling: str, ada: bool, load_model: bool):
+def load_config(path: str, dataset_name: str, imbalance_ratio: int, oversampling: str,
+                ada: bool, load_model: bool):
 
     # Load config from yaml file
     config_schema = class_schema(Config)
@@ -34,10 +35,7 @@ def load_config(path: str, dataset_name: str, imbalance_ratio: int, oversampling
     imbalance_ratio_suffix = f'_IR-{imbalance_ratio}'
     ada_suffix = '_ada' if config.trainer.ada else ''
     config.model.saved_model += f'_{dataset_name}{oversampling_suffix}{imbalance_ratio_suffix}_classes_{"-".join(map(str, config.dataset.classes))}{ada_suffix}'
-<<<<<<< HEAD
     config.dataset.gan_model.saved_model += f'_{dataset_name}{imbalance_ratio_suffix}_classes_{config.dataset.classes[-1]}{ada_suffix}'
-=======
->>>>>>> 1d6922fb87c162eb5d20967475fcee69a7cb7760
     os.makedirs(config.model.saved_model, exist_ok=True)
     return config
 
