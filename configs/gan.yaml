@@ -12,11 +12,7 @@ trainer:
 dataset:
   validation_split: 0
   classes: [1]
-<<<<<<< HEAD
   batch_size: 32
-=======
-  batch_size: 64
->>>>>>> 1d6922fb87c162eb5d20967475fcee69a7cb7760
   oversampling: 'none'
   gan_model:
     name: '' 
