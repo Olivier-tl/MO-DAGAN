@@ -13,7 +13,6 @@ class SyntheticDataset(torch.utils.data.IterableDataset):
         self.label = dataset_config.classes[-1]
         self.model = ModelFactory.create(dataset_config.gan_model,
                                          n_classes=len(dataset_config.classes)).to(self.device)
-
         self.buffer_size = buffer_size
         self.pointer = 0
         self.buffer = self.generate_buffer()

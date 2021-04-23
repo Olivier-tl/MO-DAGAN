@@ -17,7 +17,7 @@ from .trainer import Trainer
 logger = logging.getLogger()
 
 IMG_SAMPLES_PATH = 'output/gan_samples'
-SAVE_PER_TIMES = 500
+SAVE_PER_TIMES = 1000
 ADA_UPDATE_INTERVAL = 4
 ADA_TARGET = 0.6
 ADA_IMG_ZERO_ONE = 20000
@@ -35,8 +35,8 @@ class GANTrainer(Trainer):
         self.generator_iters = trainer_config.epochs
         self.augment_pipe = None
         if self.ada:
-            self.augment_pipe = AugmentPipe()
-            self.augment_pipe.p = torch.zeros([])
+            self.augment_pipe = AugmentPipe().to(self.device)
+            self.augment_pipe.p = torch.Tensor([0]).to(self.device)
 
     def train(self):
 
@@ -99,7 +99,7 @@ class GANTrainer(Trainer):
                 # Log to WandB
                 overall_iter = g_iter * self.model.critic_iter + d_iter
                 wandb.log({'d_loss_fake': d_loss_fake, 'd_loss_real': d_loss_real, 'd_iter': overall_iter})
-
+                
             # ---------------------
             # Train generator
             # ---------------------
