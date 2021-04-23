@@ -7,17 +7,12 @@ from utils import Config
 
 
 class SyntheticDataset(torch.utils.data.IterableDataset):
-    def __init__(self, dataset_config: Config.Dataset, buffer_size: int = 64, ada: bool = False):
+    def __init__(self, dataset_config: Config.Dataset, buffer_size: int = 64):
         super(SyntheticDataset).__init__()
         self.device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
         self.label = dataset_config.classes[-1]
-        ada_suffix = '_ada' if ada else ''
-        imbalance_ratio_suffix = f'_IR-{dataset_config.imbalance_ratio}'
-        minority_class = dataset_config.classes[-1]
-        dataset_config.gan_model.saved_model += f'_{dataset_config.name}{imbalance_ratio_suffix}_classes_{minority_class}{ada_suffix}'
         self.model = ModelFactory.create(dataset_config.gan_model,
                                          n_classes=len(dataset_config.classes)).to(self.device)
-
         self.buffer_size = buffer_size
         self.pointer = 0
         self.buffer = self.generate_buffer()

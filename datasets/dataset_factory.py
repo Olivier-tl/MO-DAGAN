@@ -19,7 +19,7 @@ IMG_RES = 32
 class DatasetFactory:
     """Constructs the appropriate dataset. Returns train, valid & test splits.
     """
-    def create(dataset_config: Config.Dataset, ada: bool = False) -> typing.Tuple[DataLoader, DataLoader, DataLoader]:
+    def create(dataset_config: Config.Dataset) -> typing.Tuple[DataLoader, DataLoader, DataLoader]:
         save_path = os.path.join(CACHE_FOLDER, dataset_config.name)
 
         # FIXME : Normalize using the actual mean and std of the dataset (issue #15)
@@ -55,9 +55,8 @@ class DatasetFactory:
         if dataset_config.oversampling == 'oversampling':
             train_sampler = get_balanced_sampler(train_dataset.dataset.labels[train_dataset.indices])
             valid_sampler = get_balanced_sampler(valid_dataset.dataset.labels[valid_dataset.indices])
-            test_sampler = get_balanced_sampler(test_dataset.labels)
         elif dataset_config.oversampling == 'gan':
-            synthetic_dataset = SyntheticDataset(dataset_config, ada=ada)
+            synthetic_dataset = SyntheticDataset(dataset_config)
             train_dataset = BalancedDataset(train_dataset, synthetic_dataset)
             valid_dataset = BalancedDataset(valid_dataset, synthetic_dataset)
         elif dataset_config.oversampling == 'none':
@@ -74,10 +73,14 @@ class DatasetFactory:
 
 def get_balanced_sampler(labels):
     # Create balanced sampler
+    
     class_sample_count = np.array([len(np.where(labels == l)[0]) for l in np.unique(labels)])
     weight = 1. / class_sample_count
     samples_weight = np.array([weight[l] for l in labels])
 
     samples_weight = torch.from_numpy(samples_weight)
     samples_weigth = samples_weight.double()
-    return WeightedRandomSampler(samples_weight, len(samples_weight))
+
+    n_labels = len(np.unique(labels))
+    num_samples = int(n_labels * np.max(class_sample_count))
+    return WeightedRandomSampler(samples_weight, num_samples=num_samples)

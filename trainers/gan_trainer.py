@@ -135,7 +135,7 @@ class GANTrainer(Trainer):
 
             # Saving model and sampling images every 1000th generator iterations
             if (g_iter) % SAVE_PER_TIMES == 0:
-                self.save_model(desc=f'iter_{g_iter}')
+                #self.save_model(desc=f'iter_{g_iter}')
 
                 if not os.path.exists(IMG_SAMPLES_PATH):
                     os.makedirs(IMG_SAMPLES_PATH)

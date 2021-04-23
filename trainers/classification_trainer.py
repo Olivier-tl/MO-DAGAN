@@ -35,6 +35,7 @@ class ClassificationTrainer(Trainer):
             self.model.train()
             total_loss = 0.0
             total_accuracy = 0.0
+            total_examples = 0
             with tqdm.tqdm(enumerate(self.train_dataset, 0),
                            desc=f'Training Epoch {epoch+1}',
                            total=len(self.train_dataset)) as train_pbar:
@@ -55,15 +56,16 @@ class ClassificationTrainer(Trainer):
 
                     # compute accuracy
                     _, preds = torch.max(outputs.data, dim=1)
-                    accuracy = (preds == labels).sum().float() / len(labels)
+                    accuracy = (preds == labels).sum().float()
 
                     # print statistics
-                    train_pbar.set_postfix({'loss': f'{loss.item():.3f}', 'accuracy': f'{accuracy.item():.3f}'})
+                    train_pbar.set_postfix({'loss': f'{loss.item()/len(labels):.3f}', 'accuracy': f'{accuracy.item()/len(labels):.3f}'})
                     total_loss += loss.item()
                     total_accuracy += accuracy.item()
+                    total_examples += len(inputs)
 
-                total_loss /= len(self.train_dataset)
-                total_accuracy /= len(self.train_dataset)
+                total_loss /= total_examples
+                total_accuracy /= total_examples
 
                 # log metrics
                 train_pbar.set_postfix({'loss': f'{total_loss:.3f}', 'accuracy': f'{total_accuracy:.3f}'})
@@ -84,6 +86,7 @@ class ClassificationTrainer(Trainer):
                 confusion_matrix = None
                 total_loss = 0.0
                 total_accuracy = 0.0
+                total_examples = 0
                 for i, data in test_pbar:
 
                     inputs, labels = data[0].to(self.device), data[1].to(self.device)
@@ -92,18 +95,19 @@ class ClassificationTrainer(Trainer):
                     _, preds = torch.max(outputs.data, dim=1)
 
                     loss = self.loss(outputs, labels)
-                    accuracy = (preds == labels).sum().float() / len(labels)
+                    accuracy = (preds == labels).sum().float()
                     if confusion_matrix == None:
                         confusion_matrix = metrics.get_confusion_matrix(preds, labels, len(self.classes))
                     else:
                         confusion_matrix += metrics.get_confusion_matrix(preds, labels, len(self.classes))
 
-                    test_pbar.set_postfix({'loss': f'{loss.item():.3f}', 'accuracy': f'{accuracy.item():.3f}'})
+                    test_pbar.set_postfix({'loss': f'{loss.item()/len(labels):.3f}', 'accuracy': f'{accuracy.item()/len(labels):.3f}'})
                     total_loss += loss.item()
                     total_accuracy += accuracy.item()
+                    total_examples += len(inputs)
 
-                total_loss /= len(test_dataset)
-                total_accuracy /= len(test_dataset)
+                total_loss /= total_examples
+                total_accuracy /= total_examples
                 total_csa = metrics.get_CSA(confusion_matrix)
                 total_acsa = torch.mean(total_csa)
                 test_pbar.set_postfix({'loss': f'{total_loss:.3f}', 'accuracy': f'{total_accuracy:.3f}'})

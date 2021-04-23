@@ -62,7 +62,7 @@ def main(
 
     # Load dataset
     logger.info('Loading dataset...')
-    train_dataset, valid_dataset, test_dataset = DatasetFactory.create(dataset_config=config.dataset, ada=ada)
+    train_dataset, valid_dataset, test_dataset = DatasetFactory.create(dataset_config=config.dataset)
 
     # Instatiate trainer
     logger.info('Loading trainer...')
