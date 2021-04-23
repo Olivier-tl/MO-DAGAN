@@ -3,7 +3,7 @@ import subprocess
 
 import fire
 
-datasets = ['mnist']#, 'fashion-mnist', 'cifar10', 'svhn']
+datasets = ['mnist', 'fashion-mnist', 'cifar10', 'svhn'] # FIXME: Missing mnist
 oversampling_options = ['none', 'oversampling', 'gan']
 imbalance_ratios = [10, 50, 100]
 ada_options = [False, True]

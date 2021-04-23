@@ -1,6 +1,6 @@
 #!/bin/bash
 #SBATCH --gres=gpu:v100:1
-#SBATCH --time=6:0:0
+#SBATCH --time=12:0:0
 #SBATCH --mem=8G
 #SBATCH --account=def-bengioy
 #SBATCH --mail-user=oliviertl@hotmail.com
