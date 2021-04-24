@@ -32,8 +32,8 @@ for i,im in enumerate(imgs[0]):
 
 # Saving generated images to folder
 for i in range(sub_ds_size):
-    im = next(iter(dataloader_no_ada))[0]
+    im = next(iter(dataloader_gen))[0]
     save_image(im, "output/fid_samples_gen/im" + str(i) + ".png")
 
 # Computing FID
-#subprocess.run(["python", "-m", "pytorch_fid", "output/fid_samples_true", "output/fid_samples_gen"])
+subprocess.run(["python", "-m", "pytorch_fid", "output/fid_samples_true", "output/fid_samples_gen"])
