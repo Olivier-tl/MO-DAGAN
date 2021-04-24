@@ -48,3 +48,4 @@ typing-inspect==0.6.0
 urllib3==1.26.4
 wandb==0.10.24
 zipp==3.4.1
+pytorch_fid==0.2.0
